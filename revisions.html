@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cours BTS SIO – SQL & Cybersécurité</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Sora:wght@300;400;600;700;800&display=swap');
+
+  :root {
+    --bg: #0d0f1a;
+    --surface: #131626;
+    --surface2: #1a1e35;
+    --border: #252a45;
+    --sql: #00d4ff;
+    --sql-dim: #004a5c;
+    --cyber: #ff4ecd;
+    --cyber-dim: #5c004a;
+    --accent: #7c6fff;
+    --green: #00ffaa;
+    --orange: #ff9000;
+    --red: #ff4444;
+    --yellow: #ffd700;
+    --text: #e2e8f0;
+    --text-dim: #8892a4;
+    --code-bg: #0a0c18;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(135deg, #0d0f1a 0%, #1a0d2e 50%, #0d1a1f 100%);
+    padding: 60px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(124,111,255,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 50%, rgba(0,212,255,0.08) 0%, transparent 60%);
+  }
+  .hero-badge {
+    display: inline-block;
+    background: linear-gradient(90deg, var(--sql), var(--accent), var(--cyber));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 800;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .hero h1 span.sql-color { color: var(--sql); }
+  .hero h1 span.cyber-color { color: var(--cyber); }
+  .hero p {
+    color: var(--text-dim);
+    font-size: 16px;
+    max-width: 600px;
+    margin: 0 auto 30px;
+    position: relative;
+  }
+  .hero-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    position: relative;
+  }
+  .tag {
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Space Mono', monospace;
+  }
+  .tag-sql { background: rgba(0,212,255,0.1); color: var(--sql); border: 1px solid rgba(0,212,255,0.3); }
+  .tag-cyber { background: rgba(255,78,205,0.1); color: var(--cyber); border: 1px solid rgba(255,78,205,0.3); }
+
+  /* ===== NAV ===== */
+  .nav-container {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,15,26,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    overflow-x: auto;
+  }
+  .nav-tabs {
+    display: flex;
+    gap: 0;
+    min-width: max-content;
+  }
+  .nav-tab {
+    padding: 16px 20px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    text-decoration: none;
+    display: block;
+  }
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.sql-tab:hover, .nav-tab.sql-tab.active { color: var(--sql); border-bottom-color: var(--sql); }
+  .nav-tab.cyber-tab:hover, .nav-tab.cyber-tab.active { color: var(--cyber); border-bottom-color: var(--cyber); }
+
+  /* ===== LAYOUT ===== */
+  .content { max-width: 1000px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* ===== PART HEADER ===== */
+  .part-header {
+    padding: 40px;
+    border-radius: 16px;
+    margin: 60px 0 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .part-header.sql-part {
+    background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(0,212,255,0.02));
+    border: 1px solid rgba(0,212,255,0.2);
+  }
+  .part-header.cyber-part {
+    background: linear-gradient(135deg, rgba(255,78,205,0.08), rgba(255,78,205,0.02));
+    border: 1px solid rgba(255,78,205,0.2);
+  }
+  .part-icon { font-size: 48px; margin-bottom: 12px; display: block; }
+  .part-header h2 {
+    font-size: 30px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .part-header.sql-part h2 { color: var(--sql); }
+  .part-header.cyber-part h2 { color: var(--cyber); }
+  .part-header p { color: var(--text-dim); font-size: 15px; }
+
+  /* ===== SECTION ===== */
+  .section {
+    margin-bottom: 60px;
+    scroll-margin-top: 60px;
+  }
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-title .num {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 700;
+  }
+  .sql-num { background: var(--sql-dim); color: var(--sql); }
+  .cyber-num { background: var(--cyber-dim); color: var(--cyber); }
+
+  /* ===== SUBSECTION ===== */
+  .subsection { margin: 28px 0; }
+  .subsection h4 {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .subsection h4::before {
+    content: '▸';
+    color: var(--accent);
+    font-size: 14px;
+  }
+
+  /* ===== CODE ===== */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    margin: 16px 0;
+    position: relative;
+  }
+  pre .label {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  code {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .kw { color: #ff9000; font-weight: 700; } /* keywords */
+  .fn { color: #00d4ff; } /* functions */
+  .str { color: #00ffaa; } /* strings */
+  .cmt { color: #4a5568; font-style: italic; } /* comments */
+  .num-lit { color: #ff7eb3; } /* numbers */
+  .tbl { color: #c4b5fd; } /* tables/objects */
+  .op { color: #ff4ecd; } /* operators */
+
+  code.inline {
+    background: rgba(124,111,255,0.15);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12.5px;
+  }
+
+  /* ===== CARDS ===== */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--accent); }
+  .card h5 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card p { color: var(--text-dim); font-size: 13px; line-height: 1.6; }
+
+  /* ===== ALERT BOXES ===== */
+  .alert {
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .alert-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .alert-info { background: rgba(124,111,255,0.1); border: 1px solid rgba(124,111,255,0.25); }
+  .alert-warning { background: rgba(255,144,0,0.1); border: 1px solid rgba(255,144,0,0.3); }
+  .alert-danger { background: rgba(255,68,68,0.1); border: 1px solid rgba(255,68,68,0.3); }
+  .alert-success { background: rgba(0,255,170,0.1); border: 1px solid rgba(0,255,170,0.3); }
+
+  /* ===== TABLE ===== */
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  th {
+    background: var(--surface2);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  td {
+    padding: 11px 16px;
+    border-bottom: 1px solid rgba(37,42,69,0.5);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(37,42,69,0.3); }
+  td code.inline { font-size: 12px; }
+
+  /* ===== LIST ===== */
+  ul, ol { padding-left: 20px; margin: 12px 0; }
+  li { margin-bottom: 6px; color: var(--text); font-size: 14.5px; }
+  li::marker { color: var(--accent); }
+
+  /* ===== HIGHLIGHT ===== */
+  .highlight-sql { color: var(--sql); font-weight: 600; }
+  .highlight-cyber { color: var(--cyber); font-weight: 600; }
+  .highlight-green { color: var(--green); font-weight: 600; }
+  .highlight-orange { color: var(--orange); font-weight: 600; }
+  .highlight-red { color: var(--red); font-weight: 600; }
+
+  /* ===== DIVIDER ===== */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 40px 0;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-dim);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+  }
+  .footer strong { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">BTS SIO – Cours de Révision Complet 2025</div>
+  <h1>
+    <span class="sql-color">SQL</span> &amp;
+    <span class="cyber-color">Cybersécurité</span>
+  </h1>
+  <p>Le cours ultime pour réussir ton BTS SIO — tous les thèmes de révision, de A à Z, avec exemples et schémas.</p>
+  <div class="hero-tags">
+    <span class="tag tag-sql">LDD</span>
+    <span class="tag tag-sql">LMD</span>
+    <span class="tag tag-sql">LCD</span>
+    <span class="tag tag-sql">Triggers</span>
+    <span class="tag tag-sql">Vues</span>
+    <span class="tag tag-sql">GRANT/REVOKE</span>
+    <span class="tag tag-cyber">RGPD</span>
+    <span class="tag tag-cyber">Chiffrement</span>
+    <span class="tag tag-cyber">Intégrité</span>
+    <span class="tag tag-cyber">DDoS</span>
+    <span class="tag tag-cyber">OWASP</span>
+    <span class="tag tag-cyber">Firewall</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-container">
+  <div class="nav-tabs">
+    <a class="nav-tab sql-tab" href="#ldd">LDD</a>
+    <a class="nav-tab sql-tab" href="#lmd-no-select">LMD sans SELECT</a>
+    <a class="nav-tab sql-tab" href="#lmd-select">LMD avec SELECT</a>
+    <a class="nav-tab sql-tab" href="#triggers">Triggers</a>
+    <a class="nav-tab sql-tab" href="#grant">GRANT/REVOKE</a>
+    <a class="nav-tab sql-tab" href="#vues">Vues</a>
+    <a class="nav-tab cyber-tab" href="#rgpd">RGPD</a>
+    <a class="nav-tab cyber-tab" href="#confidentialite">Confidentialité</a>
+    <a class="nav-tab cyber-tab" href="#integrite">Intégrité</a>
+    <a class="nav-tab cyber-tab" href="#disponibilite">Disponibilité</a>
+    <a class="nav-tab cyber-tab" href="#equipements">Équipements</a>
+    <a class="nav-tab cyber-tab" href="#applicatif">Applicatif</a>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- ===================================================== -->
+<!--                    PARTIE SQL                         -->
+<!-- ===================================================== -->
+
+<div class="part-header sql-part">
+  <span class="part-icon">🗄️</span>
+  <h2>Partie 1 — SQL</h2>
+  <p>Maîtrise le LDD, le LMD et le LCD : toutes les requêtes indispensables, avec exemples commentés.</p>
+</div>
+
+<!-- ===== LDD ===== -->
+<div class="section" id="ldd">
+  <div class="section-title">
+    <span class="num sql-num">SQL 01</span>
+    Langage de Définition des Données (LDD)
+  </div>
+
+  <p>Le <strong>LDD</strong> (ou DDL en anglais — <em>Data Definition Language</em>) permet de <strong>créer, modifier et supprimer des structures</strong> de base de données : tables, colonnes, contraintes, index…</p>
+
+  <div class="subsection">
+    <h4>CREATE DATABASE — Créer une base</h4>
+    <pre><code><span class="kw">CREATE DATABASE</span> <span class="tbl">ma_base</span>
+  <span class="kw">CHARACTER SET</span> utf8mb4
+  <span class="kw">COLLATE</span> utf8mb4_unicode_ci;
+
+<span class="cmt">-- Sélectionner la base à utiliser</span>
+<span class="kw">USE</span> <span class="tbl">ma_base</span>;</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h4>Types de données MySQL — Mémo complet</h4>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Type</th><th>Description</th><th>Exemple</th></tr>
+        <tr><td><code class="inline">INT</code> / <code class="inline">BIGINT</code></td><td>Entier (4 ou 8 octets)</td><td>id, age, quantité</td></tr>
+        <tr><td><code class="inline">DECIMAL(p,s)</code></td><td>Nombre décimal exact</td><td>prix DECIMAL(10,2)</td></tr>
+        <tr><td><code class="inline">FLOAT</code> / <code class="inline">DOUBLE</code></td><td>Nombre à virgule flottante</td><td>mesure scientifique</td></tr>
+        <tr><td><code class="inline">VARCHAR(n)</code></td><td>Chaîne variable jusqu'à n car.</td><td>nom VARCHAR(100)</td></tr>
+        <tr><td><code class="inline">CHAR(n)</code></td><td>Chaîne fixe de n caractères</td><td>code_pays CHAR(2)</td></tr>
+        <tr><td><code class="inline">TEXT</code></td><td>Grand texte (jusqu'à 65 535 car.)</td><td>description, contenu</td></tr>
+        <tr><td><code class="inline">DATE</code></td><td>Date (YYYY-MM-DD)</td><td>date_naissance</td></tr>
+        <tr><td><code class="inline">DATETIME</code></td><td>Date + heure</td><td>created_at</td></tr>
+        <tr><td><code class="inline">TIMESTAMP</code></td><td>Horodatage auto-mis à jour</td><td>updated_at</td></tr>
+        <tr><td><code class="inline">BOOLEAN</code></td><td>Vrai/Faux (alias TINYINT(1))</td><td>actif BOOLEAN</td></tr>
+        <tr><td><code class="inline">ENUM('a','b')</code></td><td>Valeur parmi une liste</td><td>statut ENUM('actif','inactif')</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>CREATE TABLE — Créer une table complète</h4>
+    <pre><code><span class="kw">CREATE TABLE</span> <span class="tbl">clients</span> (
+  <span class="tbl">id_client</span>     <span class="fn">INT</span>           <span class="kw">NOT NULL AUTO_INCREMENT</span>,
+  <span class="tbl">nom</span>           <span class="fn">VARCHAR</span>(<span class="num-lit">100</span>)  <span class="kw">NOT NULL</span>,
+  <span class="tbl">prenom</span>        <span class="fn">VARCHAR</span>(<span class="num-lit">100</span>)  <span class="kw">NOT NULL</span>,
+  <span class="tbl">email</span>         <span class="fn">VARCHAR</span>(<span class="num-lit">200</span>)  <span class="kw">NOT NULL UNIQUE</span>,
+  <span class="tbl">date_naissance</span> <span class="fn">DATE</span>,
+  <span class="tbl">age</span>           <span class="fn">INT</span>           <span class="kw">CHECK</span> (<span class="tbl">age</span> <span class="op">>=</span> <span class="num-lit">0</span> <span class="kw">AND</span> <span class="tbl">age</span> <span class="op"><=</span> <span class="num-lit">150</span>),
+  <span class="tbl">ville</span>         <span class="fn">VARCHAR</span>(<span class="num-lit">100</span>)  <span class="kw">DEFAULT</span> <span class="str">'Lyon'</span>,
+  <span class="tbl">actif</span>         <span class="fn">BOOLEAN</span>       <span class="kw">DEFAULT</span> <span class="num-lit">TRUE</span>,
+  <span class="kw">PRIMARY KEY</span> (<span class="tbl">id_client</span>)
+);
+
+<span class="kw">CREATE TABLE</span> <span class="tbl">commandes</span> (
+  <span class="tbl">id_commande</span>   <span class="fn">INT</span>           <span class="kw">NOT NULL AUTO_INCREMENT</span>,
+  <span class="tbl">id_client</span>     <span class="fn">INT</span>           <span class="kw">NOT NULL</span>,
+  <span class="tbl">date_commande</span> <span class="fn">DATE</span>          <span class="kw">NOT NULL</span>,
+  <span class="tbl">montant</span>       <span class="fn">DECIMAL</span>(<span class="num-lit">10</span>,<span class="num-lit">2</span>) <span class="kw">NOT NULL CHECK</span> (<span class="tbl">montant</span> <span class="op">></span> <span class="num-lit">0</span>),
+  <span class="kw">PRIMARY KEY</span> (<span class="tbl">id_commande</span>),
+  <span class="kw">FOREIGN KEY</span> (<span class="tbl">id_client</span>) <span class="kw">REFERENCES</span> <span class="tbl">clients</span>(<span class="tbl">id_client</span>)
+    <span class="kw">ON DELETE CASCADE</span>
+    <span class="kw">ON UPDATE CASCADE</span>
+);</code></pre>
+
+    <div class="alert alert-info">
+      <span class="alert-icon">💡</span>
+      <div><strong>Les contraintes d'intégrité :</strong>
+        <br>• <code class="inline">PRIMARY KEY</code> : identifiant unique de chaque ligne, non null
+        <br>• <code class="inline">FOREIGN KEY</code> : référence vers une clé primaire d'une autre table
+        <br>• <code class="inline">NOT NULL</code> : la valeur est obligatoire
+        <br>• <code class="inline">UNIQUE</code> : pas de doublon dans la colonne
+        <br>• <code class="inline">CHECK (condition)</code> : valeur doit respecter une condition
+        <br>• <code class="inline">DEFAULT valeur</code> : valeur par défaut si rien n'est précisé
+      </div>
+    </div>
+
+    <div class="alert alert-warning">
+      <span class="alert-icon">⚠️</span>
+      <div><strong>ON DELETE / ON UPDATE :</strong>
+        <br>• <code class="inline">CASCADE</code> : supprime/modifie automatiquement les enregistrements liés
+        <br>• <code class="inline">SET NULL</code> : met la clé étrangère à NULL
+        <br>• <code class="inline">RESTRICT</code> (défaut) : bloque l'opération si des enregistrements liés existent
+        <br>• <code class="inline">NO ACTION</code> : similaire à RESTRICT
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>ALTER TABLE — Modifier une table existante</h4>
+    <pre><code><span class="cmt">-- Ajouter une colonne</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">clients</span>
+  <span class="kw">ADD COLUMN</span> <span class="tbl">telephone</span> <span class="fn">VARCHAR</span>(<span class="num-lit">20</span>);
+
+<span class="cmt">-- Modifier le type d'une colonne</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">clients</span>
+  <span class="kw">MODIFY COLUMN</span> <span class="tbl">nom</span> <span class="fn">VARCHAR</span>(<span class="num-lit">200</span>) <span class="kw">NOT NULL</span>;
+
+<span class="cmt">-- Renommer une colonne</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">clients</span>
+  <span class="kw">RENAME COLUMN</span> <span class="tbl">telephone</span> <span class="kw">TO</span> <span class="tbl">tel</span>;
+
+<span class="cmt">-- Supprimer une colonne</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">clients</span>
+  <span class="kw">DROP COLUMN</span> <span class="tbl">tel</span>;
+
+<span class="cmt">-- Ajouter une contrainte</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">clients</span>
+  <span class="kw">ADD CONSTRAINT</span> uk_email <span class="kw">UNIQUE</span> (<span class="tbl">email</span>);
+
+<span class="cmt">-- Supprimer une contrainte (clé étrangère)</span>
+<span class="kw">ALTER TABLE</span> <span class="tbl">commandes</span>
+  <span class="kw">DROP FOREIGN KEY</span> <span class="tbl">fk_client</span>;
+
+<span class="cmt">-- Renommer la table</span>
+<span class="kw">RENAME TABLE</span> <span class="tbl">clients</span> <span class="kw">TO</span> <span class="tbl">utilisateurs</span>;</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h4>DROP & TRUNCATE — Supprimer</h4>
+    <pre><code><span class="cmt">-- Supprimer une table (structure + données)</span>
+<span class="kw">DROP TABLE IF EXISTS</span> <span class="tbl">commandes</span>;
+<span class="kw">DROP TABLE IF EXISTS</span> <span class="tbl">clients</span>;
+
+<span class="cmt">-- Supprimer toute la base de données</span>
+<span class="kw">DROP DATABASE IF EXISTS</span> <span class="tbl">ma_base</span>;
+
+<span class="cmt">-- Vider une table (garde la structure, réinitialise l'auto-increment)</span>
+<span class="kw">TRUNCATE TABLE</span> <span class="tbl">commandes</span>;</code></pre>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Commande</th><th>Structure</th><th>Données</th><th>Auto-increment</th><th>Rollback possible ?</th></tr>
+        <tr><td><code class="inline">DROP TABLE</code></td><td>❌ Supprimée</td><td>❌ Supprimées</td><td>❌</td><td>❌ Non</td></tr>
+        <tr><td><code class="inline">TRUNCATE TABLE</code></td><td>✅ Conservée</td><td>❌ Supprimées</td><td>🔄 Réinitialisé</td><td>❌ Non</td></tr>
+        <tr><td><code class="inline">DELETE FROM</code></td><td>✅ Conservée</td><td>❌ Supprimées</td><td>✅ Conservé</td><td>✅ Oui</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>INDEX — Accélérer les recherches</h4>
+    <pre><code><span class="cmt">-- Créer un index simple</span>
+<span class="kw">CREATE INDEX</span> idx_nom <span class="kw">ON</span> <span class="tbl">clients</span>(<span class="tbl">nom</span>);
+
+<span class="cmt">-- Créer un index unique</span>
+<span class="kw">CREATE UNIQUE INDEX</span> idx_email <span class="kw">ON</span> <span class="tbl">clients</span>(<span class="tbl">email</span>);
+
+<span class="cmt">-- Supprimer un index</span>
+<span class="kw">DROP INDEX</span> idx_nom <span class="kw">ON</span> <span class="tbl">clients</span>;</code></pre>
+  </div>
+</div>
+
+<!-- ===== LMD SANS SELECT ===== -->
+<div class="section" id="lmd-no-select">
+  <div class="section-title">
+    <span class="num sql-num">SQL 02</span>
+    LMD sans SELECT — INSERT, UPDATE, DELETE
+  </div>
+
+  <p>Le <strong>LMD</strong> (Langage de Manipulation des Données / DML) permet d'<strong>insérer, modifier et supprimer</strong> des données.</p>
+
+  <div class="subsection">
+    <h4>INSERT INTO — Insérer des données</h4>
+    <pre><code><span class="cmt">-- Insérer une seule ligne (avec noms de colonnes)</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">clients</span> (<span class="tbl">nom</span>, <span class="tbl">prenom</span>, <span class="tbl">email</span>, <span class="tbl">ville</span>)
+<span class="kw">VALUES</span> (<span class="str">'Dupont'</span>, <span class="str">'Jean'</span>, <span class="str">'jean.dupont@mail.fr'</span>, <span class="str">'Paris'</span>);
+
+<span class="cmt">-- Insérer plusieurs lignes en une seule requête</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">clients</span> (<span class="tbl">nom</span>, <span class="tbl">prenom</span>, <span class="tbl">email</span>)
+<span class="kw">VALUES</span>
+  (<span class="str">'Martin'</span>, <span class="str">'Alice'</span>, <span class="str">'alice@mail.fr'</span>),
+  (<span class="str">'Bernard'</span>, <span class="str">'Bob'</span>, <span class="str">'bob@mail.fr'</span>),
+  (<span class="str">'Petit'</span>, <span class="str">'Clara'</span>, <span class="str">'clara@mail.fr'</span>);
+
+<span class="cmt">-- Insérer depuis une autre table (INSERT ... SELECT)</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">archives_clients</span> (<span class="tbl">nom</span>, <span class="tbl">email</span>)
+<span class="kw">SELECT</span> <span class="tbl">nom</span>, <span class="tbl">email</span>
+<span class="kw">FROM</span> <span class="tbl">clients</span>
+<span class="kw">WHERE</span> <span class="tbl">actif</span> <span class="op">=</span> <span class="num-lit">FALSE</span>;</code></pre>
+
+    <div class="alert alert-info">
+      <span class="alert-icon">💡</span>
+      <div>Si tu n'indiques pas les noms de colonnes, tu dois fournir des valeurs pour <strong>toutes</strong> les colonnes dans l'ordre exact de la table. Toujours préciser les colonnes = bonne pratique !</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>UPDATE — Modifier des données</h4>
+    <pre><code><span class="cmt">-- Mettre à jour UN client précis</span>
+<span class="kw">UPDATE</span> <span class="tbl">clients</span>
+<span class="kw">SET</span> <span class="tbl">ville</span> <span class="op">=</span> <span class="str">'Lyon'</span>, <span class="tbl">actif</span> <span class="op">=</span> <span class="num-lit">TRUE</span>
+<span class="kw">WHERE</span> <span class="tbl">id_client</span> <span class="op">=</span> <span class="num-lit">5</span>;
+
+<span class="cmt">-- Augmenter de 10% tous les montants de commandes du mois dernier</span>
+<span class="kw">UPDATE</span> <span class="tbl">commandes</span>
+<span class="kw">SET</span> <span class="tbl">montant</span> <span class="op">=</span> <span class="tbl">montant</span> <span class="op">*</span> <span class="num-lit">1.10</span>
+<span class="kw">WHERE</span> <span class="fn">MONTH</span>(<span class="tbl">date_commande</span>) <span class="op">=</span> <span class="fn">MONTH</span>(<span class="fn">NOW</span>()) <span class="op">-</span> <span class="num-lit">1</span>;
+
+<span class="cmt">-- UPDATE avec JOIN (modifier via une autre table)</span>
+<span class="kw">UPDATE</span> <span class="tbl">commandes</span> c
+<span class="kw">JOIN</span> <span class="tbl">clients</span> cl <span class="kw">ON</span> c.<span class="tbl">id_client</span> <span class="op">=</span> cl.<span class="tbl">id_client</span>
+<span class="kw">SET</span> c.<span class="tbl">montant</span> <span class="op">=</span> c.<span class="tbl">montant</span> <span class="op">*</span> <span class="num-lit">0.9</span>
+<span class="kw">WHERE</span> cl.<span class="tbl">ville</span> <span class="op">=</span> <span class="str">'Paris'</span>;</code></pre>
+
+    <div class="alert alert-danger">
+      <span class="alert-icon">🚨</span>
+      <div><strong>DANGER !</strong> Un <code class="inline">UPDATE</code> sans <code class="inline">WHERE</code> met à jour <strong>TOUTES</strong> les lignes de la table. Toujours vérifier ta clause WHERE avant d'exécuter !</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>DELETE — Supprimer des données</h4>
+    <pre><code><span class="cmt">-- Supprimer un client précis</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">clients</span>
+<span class="kw">WHERE</span> <span class="tbl">id_client</span> <span class="op">=</span> <span class="num-lit">42</span>;
+
+<span class="cmt">-- Supprimer tous les clients inactifs</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">clients</span>
+<span class="kw">WHERE</span> <span class="tbl">actif</span> <span class="op">=</span> <span class="num-lit">FALSE</span>;
+
+<span class="cmt">-- DELETE avec sous-requête</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">commandes</span>
+<span class="kw">WHERE</span> <span class="tbl">id_client</span> <span class="kw">IN</span> (
+  <span class="kw">SELECT</span> <span class="tbl">id_client</span> <span class="kw">FROM</span> <span class="tbl">clients</span>
+  <span class="kw">WHERE</span> <span class="tbl">ville</span> <span class="op">=</span> <span class="str">'Bordeaux'</span>
+);
+
+<span class="cmt">-- Vider toute la table (utiliser TRUNCATE si pas besoin de rollback)</span>
+<span class="kw">DELETE FROM</span> <span class="tbl">clients</span>; <span class="cmt">-- ⚠️ supprime TOUT</span></code></pre>
+  </div>
+
+  <div class="subsection">
+    <h4>Transactions — Sécuriser les opérations</h4>
+    <pre><code><span class="kw">START TRANSACTION</span>;
+
+<span class="kw">UPDATE</span> <span class="tbl">comptes</span> <span class="kw">SET</span> <span class="tbl">solde</span> <span class="op">=</span> <span class="tbl">solde</span> <span class="op">-</span> <span class="num-lit">500</span> <span class="kw">WHERE</span> <span class="tbl">id</span> <span class="op">=</span> <span class="num-lit">1</span>;
+<span class="kw">UPDATE</span> <span class="tbl">comptes</span> <span class="kw">SET</span> <span class="tbl">solde</span> <span class="op">=</span> <span class="tbl">solde</span> <span class="op">+</span> <span class="num-lit">500</span> <span class="kw">WHERE</span> <span class="tbl">id</span> <span class="op">=</span> <span class="num-lit">2</span>;
+
+<span class="cmt">-- Si tout va bien :</span>
+<span class="kw">COMMIT</span>;
+
+<span class="cmt">-- Si une erreur survient :</span>
+<span class="kw">ROLLBACK</span>;</code></pre>
+    <div class="alert alert-info">
+      <span class="alert-icon">💡</span>
+      <div>Les transactions garantissent les propriétés <strong>ACID</strong> : <strong>A</strong>tomicité, <strong>C</strong>ohérence, <strong>I</strong>solation, <strong>D</strong>urabilité. Soit tout passe, soit rien ne passe.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LMD AVEC SELECT ===== -->
+<div class="section" id="lmd-select">
+  <div class="section-title">
+    <span class="num sql-num">SQL 03</span>
+    LMD avec SELECT + Fonctions MySQL
+  </div>
+
+  <div class="subsection">
+    <h4>Structure de base d'un SELECT</h4>
+    <pre><code><span class="kw">SELECT</span>   [colonnes ou expressions]      <span class="cmt">-- 1. Quoi afficher</span>
+<span class="kw">FROM</span>     [table(s)]                      <span class="cmt">-- 2. D'où</span>
+<span class="kw">JOIN</span>     [autre table] <span class="kw">ON</span> [condition]   <span class="cmt">-- 3. Jointures</span>
+<span class="kw">WHERE</span>    [condition de filtrage]         <span class="cmt">-- 4. Filtrer les lignes (avant GROUP BY)</span>
+<span class="kw">GROUP BY</span> [colonne(s)]                   <span class="cmt">-- 5. Regrouper</span>
+<span class="kw">HAVING</span>   [condition sur agrégat]        <span class="cmt">-- 6. Filtrer les groupes (après GROUP BY)</span>
+<span class="kw">ORDER BY</span> [colonne] [ASC|DESC]           <span class="cmt">-- 7. Trier</span>
+<span class="kw">LIMIT</span>    [n] <span class="kw">OFFSET</span> [m];               <span class="cmt">-- 8. Pagination</span></code></pre>
+    <div class="alert alert-warning">
+      <span class="alert-icon">⚠️</span>
+      <div>L'ordre d'écriture est obligatoire. <strong>WHERE ≠ HAVING</strong> : WHERE filtre les lignes <em>avant</em> le regroupement, HAVING filtre les groupes <em>après</em> l'agrégation.</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>SELECT — Les bases</h4>
+    <pre><code><span class="cmt">-- Tout afficher</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">clients</span>;
+
+<span class="cmt">-- Colonnes spécifiques avec alias</span>
+<span class="kw">SELECT</span>
+  <span class="tbl">nom</span>    <span class="kw">AS</span> <span class="str">'Nom de famille'</span>,
+  <span class="tbl">prenom</span> <span class="kw">AS</span> <span class="str">'Prénom'</span>,
+  <span class="tbl">ville</span>
+<span class="kw">FROM</span> <span class="tbl">clients</span>
+<span class="kw">WHERE</span> <span class="tbl">actif</span> <span class="op">=</span> <span class="num-lit">TRUE</span>
+<span class="kw">ORDER BY</span> <span class="tbl">nom</span> <span class="kw">ASC</span>;
+
+<span class="cmt">-- DISTINCT : éliminer les doublons</span>
+<span class="kw">SELECT DISTINCT</span> <span class="tbl">ville</span> <span class="kw">FROM</span> <span class="tbl">clients</span>;
+
+<span class="cmt">-- LIMIT + OFFSET : pagination (page 2, 10 résultats par page)</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">clients</span>
+<span class="kw">ORDER BY</span> <span class="tbl">nom</span>
+<span class="kw">LIMIT</span> <span class="num-lit">10</span> <span class="kw">OFFSET</span> <span class="num-lit">10</span>;</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h4>Opérateurs de filtrage (WHERE)</h4>
+    <pre><code><span class="cmt">-- Comparaison</span>
+<span class="kw">WHERE</span> <span class="tbl">age</span> <span class="op">>=</span> <span class="num-lit">18</span> <span class="kw">AND</span> <span class="tbl">age</span> <span class="op"><=</span> <span class="num-lit">65</span>
+
+<span class="cmt">-- BETWEEN (inclusif)</span>
+<span class="kw">WHERE</span> <span class="tbl">montant</span> <span class="kw">BETWEEN</span> <span class="num-lit">100</span> <span class="kw">AND</span> <span class="num-lit">500</span>
+
+<span class="cmt">-- IN (liste de valeurs)</span>
+<span class="kw">WHERE</span> <span class="tbl">ville</span> <span class="kw">IN</span> (<span class="str">'Paris'</span>, <span class="str">'Lyon'</span>, <span class="str">'Bordeaux'</span>)
+
+<span class="cmt">-- LIKE (pattern) : % = n'importe quels caractères, _ = un seul</span>
+<span class="kw">WHERE</span> <span class="tbl">email</span> <span class="kw">LIKE</span> <span class="str">'%@gmail.com'</span>
+<span class="kw">WHERE</span> <span class="tbl">nom</span> <span class="kw">LIKE</span> <span class="str">'D_pont'</span>          <span class="cmt">-- Du, Di, Da...</span>
+
+<span class="cmt">-- IS NULL / IS NOT NULL</span>
+<span class="kw">WHERE</span> <span class="tbl">date_naissance</span> <span class="kw">IS NULL</span>
+<span class="kw">WHERE</span> <span class="tbl">telephone</span> <span class="kw">IS NOT NULL</span>
+
+<span class="cmt">-- NOT</span>
+<span class="kw">WHERE</span> <span class="tbl">ville</span> <span class="kw">NOT IN</span> (<span class="str">'Paris'</span>, <span class="str">'Lyon'</span>)</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h4>Les Jointures — Comprendre et maîtriser</h4>
+    <pre><code><span class="cmt">-- INNER JOIN : seulement les lignes qui correspondent des 2 côtés</span>
+<span class="kw">SELECT</span> c.<span class="tbl">nom</span>, c.<span class="tbl">prenom</span>, cmd.<span class="tbl">montant</span>
+<span class="kw">FROM</span> <span class="tbl">clients</span> c
+<span class="kw">INNER JOIN</span> <span class="tbl">commandes</span> cmd <span class="kw">ON</span> c.<span class="tbl">id_client</span> <span class="op">=</span> cmd.<span class="tbl">id_client</span>;
+
+<span class="cmt">-- LEFT JOIN : tous les clients, même sans commande</span>
+<span class="kw">SELECT</span> c.<span class="tbl">nom</span>, cmd.<span class="tbl">montant</span>
+<span class="kw">FROM</span> <span class="tbl">clients</span> c
+<span class="kw">LEFT JOIN</span> <span class="tbl">commandes</span> cmd <span class="kw">ON</span> c.<span class="tbl">id_client</span> <span class="op">=</span> cmd.<span class="tbl">id_client</span>;
+
+<span class="cmt">-- RIGHT JOIN : toutes les commandes, même sans client trouvé</span>
+<span class="kw">SELECT</span> c.<span class="tbl">nom</span>, cmd.<span class="tbl">montant</span>
+<span class="kw">FROM</span> <span class="tbl">clients</span> c
+<span class="kw">RIGHT JOIN</span> <span class="tbl">commandes</span> cmd <span class="kw">ON</span> c.<span class="tbl">id_client</span> <span class="op">=</span> cmd.<span class="tbl">id_client</span>;
+
+<span class="cmt">-- Jointure sur 3 tables</span>
+<span class="kw">SELECT</span> c.<span class="tbl">nom</span>, p.<span class="tbl">libelle</span>, l.<span class="tbl">quantite</span>
+<span class="kw">FROM</span> <span class="tbl">clients</span> c
+<span class="kw">JOIN</span> <span class="tbl">commandes</span> cmd <span class="kw">ON</span> c.<span class="tbl">id_client</span> <span class="op">=</span> cmd.<span class="tbl">id_client</span>
+<span class="kw">JOIN</span> <span class="tbl">lignes_commande</span> l <span class="kw">ON</span> cmd.<span class="tbl">id_commande</span> <span class="op">=</span> l.<span class="tbl">id_commande</span>
+<span class="kw">JOIN</span> <span class="tbl">produits</span> p <span class="kw">ON</span> l.<span class="tbl">id_produit</span> <span class="op">=</span> p.<span class="tbl">id_produit</span>;</code></pre>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Type de jointure</th><th>Résultat</th><th>Cas d'usage</th></tr>
+        <tr><td><code class="inline">INNER JOIN</code></td><td>Intersection (correspondances des 2 côtés)</td><td>Clients ayant commandé</td></tr>
+        <tr><td><code class="inline">LEFT JOIN</code></td><td>Toutes les lignes de gauche + correspondances droite (NULL si absent)</td><td>Clients avec ou sans commande</td></tr>
+        <tr><td><code class="inline">RIGHT JOIN</code></td><td>Toutes les lignes de droite + correspondances gauche</td><td>Commandes avec ou sans client</td></tr>
+        <tr><td><code class="inline">CROSS JOIN</code></td><td>Produit cartésien (toutes les combinaisons)</td><td>Générer des paires</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Fonctions d'agrégation + GROUP BY / HAVING</h4>
+    <pre><code><span class="cmt">-- Fonctions d'agrégation de base</span>
+<span class="kw">SELECT</span>
+  <span class="fn">COUNT</span>(<span class="op">*</span>)             <span class="kw">AS</span> total_clients,
+  <span class="fn">COUNT</span>(<span class="tbl">email</span>)         <span class="kw">AS</span> clients_avec_email,  <span class="cmt">-- ignore les NULL</span>
+  <span class="fn">SUM</span>(<span class="tbl">montant</span>)          <span class="kw">AS</span> chiffre_affaires,
+  <span class="fn">AVG</span>(<span class="tbl">montant</span>)          <span class="kw">AS</span> panier_moyen,
+  <span class="fn">MIN</span>(<span class="tbl">montant</span>)          <span class="kw">AS</span> plus_petite_commande,
+  <span class="fn">MAX</span>(<span class="tbl">montant</span>)          <span class="kw">AS</span> plus_grande_commande
+<span class="kw">FROM</span> <span class="tbl">commandes</span>;
+
+<span class="cmt">-- GROUP BY : chiffre d'affaires par ville</span>
+<span class="kw">SELECT</span>
+  c.<span class="tbl">ville</span>,
+  <span class="fn">COUNT</span>(cmd.<span class="tbl">id_commande</span>) <span class="kw">AS</span> nb_commandes,
+  <span class="fn">SUM</span>(cmd.<span class="tbl">montant</span>)       <span class="kw">AS</span> total
+<span class="kw">FROM</span> <span class="tbl">clients</span> c
+<span class="kw">JOIN</span> <span class="tbl">commandes</span> cmd <span class="kw">ON</span> c.<span class="tbl">id_client</span> <span class="op">=</span> cmd.<span class="tbl">id_client</span>
+<span class="kw">GROUP BY</span> c.<span class="tbl">ville</span>
+<span class="kw">HAVING</span> <span class="fn">SUM</span>(cmd.<span class="tbl">montant</span>) <span class="op">></span> <span class="num-lit">10000</span>    <span class="cmt">-- seulement les villes > 10 000€</span>
+<span class="kw">ORDER BY</span> total <span class="kw">DESC</span>;</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h4>Sous-requêtes (Subqueries)</h4>
+    <pre><code><span class="cmt">-- Sous-requête dans WHERE</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">clients</span>
+<span class="kw">WHERE</span> <span class="tbl">id_client</span> <span class="kw">IN</span> (
+  <span class="kw">SELECT</span> <span class="tbl">id_client</span> <span class="kw">FROM</span> <span class="tbl">commandes</span>
+  <span class="kw">WHERE</span> <span class="tbl">montant</span> <span class="op">></span> <span class="num-lit">1000</span>
+);
+
+<span class="cmt">-- Sous-requête avec EXISTS</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">clients</span> c
+<span class="kw">WHERE EXISTS</span> (
+  <span class="kw">SELECT</span> <span class="num-lit">1</span> <span class="kw">FROM</span> <span class="tbl">commandes</span> cmd
+  <span class="kw">WHERE</span> cmd.<span class="tbl">id_client</span> <span class="op">=</span> c.<span class="tbl">id_client</span>
+);
+
+<span class="cmt">-- Sous-requête scalaire dans SELECT</span>
+<span class="kw">SELECT</span>
+  <span class="tbl">nom</span>,
+  (<span class="kw">SELECT</span> <span class="fn">COUNT</span>(<span class="op">*</span>) <span class="kw">FROM</span> <span class="tbl">commandes</span> cmd
+   <span class="kw">WHERE</span> cmd.<span class="tbl">id_client</span> <span class="op">=</span> c.<span class="tbl">id_client</span>) <span class="kw">AS</span> nb_commandes
+<span class="kw">FROM</span> <span class="tbl">clients</span> c;</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h4>Fonctions MySQL — Référence complète</h4>
+
+    <p style="font-weight:700; color: var(--sql); margin-bottom: 8px;">📝 Fonctions de chaîne de caractères</p>
+    <pre><code><span class="fn">CONCAT</span>(<span class="tbl">nom</span>, <span class="str">' '</span>, <span class="tbl">prenom</span>)          <span class="cmt">-- Concaténer des chaînes</span>
+<span class="fn">UPPER</span>(<span class="tbl">nom</span>)                          <span class="cmt">-- Mettre en majuscules</span>
+<span class="fn">LOWER</span>(<span class="tbl">email</span>)                        <span class="cmt">-- Mettre en minuscules</span>
+<span class="fn">LENGTH</span>(<span class="tbl">nom</span>)                         <span class="cmt">-- Longueur en octets</span>
+<span class="fn">CHAR_LENGTH</span>(<span class="tbl">nom</span>)                    <span class="cmt">-- Longueur en caractères</span>
+<span class="fn">SUBSTRING</span>(<span class="tbl">nom</span>, <span class="num-lit">1</span>, <span class="num-lit">3</span>)               <span class="cmt">-- Extraire 'Du' de 'Dupont' (début=1)</span>
+<span class="fn">LEFT</span>(<span class="tbl">nom</span>, <span class="num-lit">3</span>)                        <span class="cmt">-- 3 premiers caractères</span>
+<span class="fn">RIGHT</span>(<span class="tbl">nom</span>, <span class="num-lit">3</span>)                       <span class="cmt">-- 3 derniers caractères</span>
+<span class="fn">TRIM</span>(<span class="tbl">nom</span>)                           <span class="cmt">-- Supprimer espaces en début/fin</span>
+<span class="fn">REPLACE</span>(<span class="tbl">nom</span>, <span class="str">'old'</span>, <span class="str">'new'</span>)          <span class="cmt">-- Remplacer</span>
+<span class="fn">INSTR</span>(<span class="tbl">email</span>, <span class="str">'@'</span>)                   <span class="cmt">-- Position du caractère (0 si absent)</span>
+<span class="fn">LPAD</span>(<span class="tbl">code</span>, <span class="num-lit">5</span>, <span class="str">'0'</span>)                  <span class="cmt">-- Compléter à gauche : '00042'</span>
+<span class="fn">FORMAT</span>(<span class="tbl">montant</span>, <span class="num-lit">2</span>)                  <span class="cmt">-- Formater : '1 234.56'</span></code></pre>
+
+    <p style="font-weight:700; color: var(--sql); margin: 16px 0 8px;">📅 Fonctions de date</p>
+    <pre><code><span class="fn">NOW</span>()                               <span class="cmt">-- Date et heure actuelles</span>
+<span class="fn">CURDATE</span>()                           <span class="cmt">-- Date actuelle (sans heure)</span>
+<span class="fn">CURTIME</span>()                           <span class="cmt">-- Heure actuelle</span>
+<span class="fn">YEAR</span>(<span class="tbl">date_naissance</span>)               <span class="cmt">-- Extraire l'année</span>
+<span class="fn">MONTH</span>(<span class="tbl">date_commande</span>)               <span class="cmt">-- Extraire le mois (1-12)</span>
+<span class="fn">DAY</span>(<span class="tbl">date_commande</span>)                 <span class="cmt">-- Extraire le jour</span>
+<span class="fn">DATEDIFF</span>(<span class="fn">NOW</span>(), <span class="tbl">date_naissance</span>)   <span class="cmt">-- Différence en jours</span>
+<span class="fn">DATE_FORMAT</span>(<span class="tbl">date</span>, <span class="str">'%d/%m/%Y'</span>)    <span class="cmt">-- Formater : '25/12/2024'</span>
+<span class="fn">DATE_ADD</span>(<span class="fn">NOW</span>(), <span class="kw">INTERVAL</span> <span class="num-lit">30</span> <span class="kw">DAY</span>)  <span class="cmt">-- Ajouter 30 jours</span>
+<span class="fn">DATE_SUB</span>(<span class="fn">NOW</span>(), <span class="kw">INTERVAL</span> <span class="num-lit">1</span> <span class="kw">YEAR</span>) <span class="cmt">-- Soustraire 1 an</span></code></pre>
+
+    <p style="font-weight:700; color: var(--sql); margin: 16px 0 8px;">🔢 Fonctions numériques</p>
+    <pre><code><span class="fn">ROUND</span>(<span class="tbl">montant</span>, <span class="num-lit">2</span>)                 <span class="cmt">-- Arrondir à 2 décimales</span>
+<span class="fn">FLOOR</span>(<span class="num-lit">4.9</span>)                         <span class="cmt">-- Arrondi inférieur → 4</span>
+<span class="fn">CEIL</span>(<span class="num-lit">4.1</span>)                          <span class="cmt">-- Arrondi supérieur → 5</span>
+<span class="fn">ABS</span>(<span class="op">-</span><span class="num-lit">42</span>)                           <span class="cmt">-- Valeur absolue → 42</span>
+<span class="fn">MOD</span>(<span class="num-lit">10</span>, <span class="num-lit">3</span>)                         <span class="cmt">-- Modulo → 1</span>
+<span class="fn">POW</span>(<span class="num-lit">2</span>, <span class="num-lit">8</span>)                          <span class="cmt">-- Puissance → 256</span>
+<span class="fn">RAND</span>()                              <span class="cmt">-- Nombre aléatoire entre 0 et 1</span></code></pre>
+
+    <p style="font-weight:700; color: var(--sql); margin: 16px 0 8px;">🔧 Fonctions utilitaires</p>
+    <pre><code><span class="fn">IFNULL</span>(<span class="tbl">telephone</span>, <span class="str">'Non renseigné'</span>)    <span class="cmt">-- Si NULL → valeur par défaut</span>
+<span class="fn">COALESCE</span>(<span class="tbl">tel1</span>, <span class="tbl">tel2</span>, <span class="str">'Aucun'</span>)        <span class="cmt">-- Premier non-NULL</span>
+<span class="fn">IF</span>(<span class="tbl">age</span> <span class="op">>=</span> <span class="num-lit">18</span>, <span class="str">'Majeur'</span>, <span class="str">'Mineur'</span>)    <span class="cmt">-- Condition inline</span>
+<span class="kw">CASE</span>
+  <span class="kw">WHEN</span> <span class="tbl">montant</span> <span class="op"><</span> <span class="num-lit">100</span> <span class="kw">THEN</span> <span class="str">'Petit'</span>
+  <span class="kw">WHEN</span> <span class="tbl">montant</span> <span class="op"><</span> <span class="num-lit">500</span> <span class="kw">THEN</span> <span class="str">'Moyen'</span>
+  <span class="kw">ELSE</span> <span class="str">'Grand'</span>
+<span class="kw">END</span> <span class="kw">AS</span> categorie</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h4>UNION — Combiner des résultats</h4>
+    <pre><code><span class="cmt">-- UNION : combine et supprime les doublons</span>
+<span class="kw">SELECT</span> <span class="tbl">nom</span>, <span class="tbl">email</span> <span class="kw">FROM</span> <span class="tbl">clients</span>
+<span class="kw">UNION</span>
+<span class="kw">SELECT</span> <span class="tbl">nom</span>, <span class="tbl">email</span> <span class="kw">FROM</span> <span class="tbl">fournisseurs</span>;
+
+<span class="cmt">-- UNION ALL : combine ET garde les doublons (plus rapide)</span>
+<span class="kw">SELECT</span> <span class="tbl">nom</span> <span class="kw">FROM</span> <span class="tbl">clients</span>
+<span class="kw">UNION ALL</span>
+<span class="kw">SELECT</span> <span class="tbl">nom</span> <span class="kw">FROM</span> <span class="tbl">fournisseurs</span>;</code></pre>
+    <div class="alert alert-info">
+      <span class="alert-icon">💡</span>
+      <div>Les requêtes combinées doivent avoir le <strong>même nombre de colonnes</strong> avec des <strong>types compatibles</strong>. Le nom des colonnes du résultat est celui de la première requête.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TRIGGERS ===== -->
+<div class="section" id="triggers">
+  <div class="section-title">
+    <span class="num sql-num">SQL 04</span>
+    LCD — Triggers (Déclencheurs)
+  </div>
+
+  <p>Un <strong>trigger</strong> est un bloc de code SQL qui s'exécute <strong>automatiquement</strong> en réponse à un événement (<code class="inline">INSERT</code>, <code class="inline">UPDATE</code>, <code class="inline">DELETE</code>) sur une table.</p>
+
+  <div class="subsection">
+    <h4>Syntaxe d'un Trigger</h4>
+    <pre><code><span class="kw">CREATE TRIGGER</span> nom_trigger
+  [<span class="kw">BEFORE</span> | <span class="kw">AFTER</span>] [<span class="kw">INSERT</span> | <span class="kw">UPDATE</span> | <span class="kw">DELETE</span>]
+  <span class="kw">ON</span> <span class="tbl">nom_table</span>
+  <span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+  <span class="cmt">-- Corps du trigger (instructions SQL)</span>
+  <span class="cmt">-- Accès aux valeurs : NEW.colonne / OLD.colonne</span>
+<span class="kw">END</span>;</code></pre>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Mot-clé</th><th>Signification</th><th>Disponible</th></tr>
+        <tr><td><code class="inline">NEW.colonne</code></td><td>Nouvelle valeur (après modification)</td><td>INSERT, UPDATE</td></tr>
+        <tr><td><code class="inline">OLD.colonne</code></td><td>Ancienne valeur (avant modification)</td><td>UPDATE, DELETE</td></tr>
+        <tr><td><code class="inline">BEFORE</code></td><td>S'exécute avant l'opération (peut modifier NEW)</td><td>INSERT, UPDATE, DELETE</td></tr>
+        <tr><td><code class="inline">AFTER</code></td><td>S'exécute après l'opération</td><td>INSERT, UPDATE, DELETE</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Exemple 1 — Journaliser les suppressions</h4>
+    <pre><code><span class="cmt">-- Table de log</span>
+<span class="kw">CREATE TABLE</span> <span class="tbl">log_suppressions</span> (
+  <span class="tbl">id</span>          <span class="fn">INT</span> <span class="kw">AUTO_INCREMENT PRIMARY KEY</span>,
+  <span class="tbl">id_client</span>   <span class="fn">INT</span>,
+  <span class="tbl">nom</span>         <span class="fn">VARCHAR</span>(<span class="num-lit">100</span>),
+  <span class="tbl">supprime_le</span> <span class="fn">DATETIME</span> <span class="kw">DEFAULT</span> <span class="fn">NOW</span>()
+);
+
+<span class="cmt">-- Trigger AFTER DELETE</span>
+<span class="kw">CREATE TRIGGER</span> trg_log_suppression_client
+  <span class="kw">AFTER DELETE ON</span> <span class="tbl">clients</span>
+  <span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+  <span class="kw">INSERT INTO</span> <span class="tbl">log_suppressions</span> (<span class="tbl">id_client</span>, <span class="tbl">nom</span>)
+  <span class="kw">VALUES</span> (<span class="kw">OLD</span>.<span class="tbl">id_client</span>, <span class="kw">OLD</span>.<span class="tbl">nom</span>);
+<span class="kw">END</span>;</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h4>Exemple 2 — Valider avant insertion (BEFORE INSERT)</h4>
+    <pre><code><span class="kw">DELIMITER</span> $$
+
+<span class="kw">CREATE TRIGGER</span> trg_check_age
+  <span class="kw">BEFORE INSERT ON</span> <span class="tbl">clients</span>
+  <span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+  <span class="kw">IF</span> <span class="kw">NEW</span>.<span class="tbl">age</span> <span class="op"><</span> <span class="num-lit">0</span> <span class="kw">OR NEW</span>.<span class="tbl">age</span> <span class="op">></span> <span class="num-lit">150</span> <span class="kw">THEN</span>
+    <span class="kw">SIGNAL SQLSTATE</span> <span class="str">'45000'</span>
+      <span class="kw">SET MESSAGE_TEXT</span> <span class="op">=</span> <span class="str">'Âge invalide : doit être entre 0 et 150'</span>;
+  <span class="kw">END IF</span>;
+<span class="kw">END</span>$$
+
+<span class="kw">DELIMITER</span> ;</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h4>Exemple 3 — Mettre à jour automatiquement (BEFORE UPDATE)</h4>
+    <pre><code><span class="kw">DELIMITER</span> $$
+
+<span class="kw">CREATE TRIGGER</span> trg_maj_date_modif
+  <span class="kw">BEFORE UPDATE ON</span> <span class="tbl">clients</span>
+  <span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+  <span class="kw">SET NEW</span>.<span class="tbl">date_modification</span> <span class="op">=</span> <span class="fn">NOW</span>();
+<span class="kw">END</span>$$
+
+<span class="kw">DELIMITER</span> ;</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h4>Gestion des triggers</h4>
+    <pre><code><span class="cmt">-- Voir tous les triggers de la base</span>
+<span class="kw">SHOW TRIGGERS</span>;
+<span class="kw">SHOW TRIGGERS FROM</span> <span class="tbl">ma_base</span>;
+
+<span class="cmt">-- Supprimer un trigger</span>
+<span class="kw">DROP TRIGGER IF EXISTS</span> trg_log_suppression_client;</code></pre>
+
+    <div class="alert alert-warning">
+      <span class="alert-icon">⚠️</span>
+      <div><strong>Points importants :</strong>
+        <br>• <code class="inline">DELIMITER $$</code> est nécessaire pour les triggers multi-instructions (pour que MySQL ne confonde pas le ; du trigger avec la fin de la commande)
+        <br>• Un trigger BEFORE peut modifier <code class="inline">NEW.colonne</code> pour changer la valeur avant insertion
+        <br>• Un trigger AFTER ne peut pas modifier les données de la ligne concernée
+        <br>• <code class="inline">SIGNAL SQLSTATE '45000'</code> permet de lever une erreur personnalisée
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== GRANT / REVOKE ===== -->
+<div class="section" id="grant">
+  <div class="section-title">
+    <span class="num sql-num">SQL 05</span>
+    LCD — GRANT et REVOKE (Gestion des droits)
+  </div>
+
+  <p>Le <strong>LCD</strong> (Langage de Contrôle des Données / DCL) gère les <strong>droits d'accès</strong> des utilisateurs à la base de données.</p>
+
+  <div class="subsection">
+    <h4>Créer et gérer des utilisateurs</h4>
+    <pre><code><span class="cmt">-- Créer un utilisateur</span>
+<span class="kw">CREATE USER</span> <span class="str">'alice'</span>@<span class="str">'localhost'</span> <span class="kw">IDENTIFIED BY</span> <span class="str">'MotDePasse!123'</span>;
+<span class="kw">CREATE USER</span> <span class="str">'bob'</span>@<span class="str">'%'</span>          <span class="kw">IDENTIFIED BY</span> <span class="str">'Secret456!'</span>;  <span class="cmt">-- % = tout hôte</span>
+
+<span class="cmt">-- Modifier le mot de passe</span>
+<span class="kw">ALTER USER</span> <span class="str">'alice'</span>@<span class="str">'localhost'</span> <span class="kw">IDENTIFIED BY</span> <span class="str">'NouveauMDP!'</span>;
+
+<span class="cmt">-- Supprimer un utilisateur</span>
+<span class="kw">DROP USER</span> <span class="str">'bob'</span>@<span class="str">'%'</span>;
+
+<span class="cmt">-- Voir tous les utilisateurs</span>
+<span class="kw">SELECT</span> <span class="tbl">user</span>, <span class="tbl">host</span> <span class="kw">FROM</span> mysql.user;</code></pre>
+
+    <div class="alert alert-info">
+      <span class="alert-icon">💡</span>
+      <div><code class="inline">'user'@'localhost'</code> : connexion uniquement depuis la machine serveur<br>
+      <code class="inline">'user'@'%'</code> : connexion depuis n'importe quel hôte<br>
+      <code class="inline">'user'@'192.168.1.%'</code> : connexion depuis un sous-réseau spécifique</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>GRANT — Accorder des droits</h4>
+    <pre><code><span class="cmt">-- Accorder des droits spécifiques sur une table</span>
+<span class="kw">GRANT SELECT</span>, <span class="kw">INSERT</span>
+  <span class="kw">ON</span> <span class="tbl">ma_base</span>.<span class="tbl">clients</span>
+  <span class="kw">TO</span> <span class="str">'alice'</span>@<span class="str">'localhost'</span>;
+
+<span class="cmt">-- Accorder des droits sur toutes les tables d'une base</span>
+<span class="kw">GRANT SELECT</span>, <span class="kw">INSERT</span>, <span class="kw">UPDATE</span>, <span class="kw">DELETE</span>
+  <span class="kw">ON</span> <span class="tbl">ma_base</span>.<span class="op">*</span>
+  <span class="kw">TO</span> <span class="str">'bob'</span>@<span class="str">'%'</span>;
+
+<span class="cmt">-- Accorder TOUS les droits sur une base</span>
+<span class="kw">GRANT ALL PRIVILEGES ON</span> <span class="tbl">ma_base</span>.<span class="op">*</span>
+  <span class="kw">TO</span> <span class="str">'admin'</span>@<span class="str">'localhost'</span>;
+
+<span class="cmt">-- Accorder tous les droits sur toutes les bases (super admin)</span>
+<span class="kw">GRANT ALL PRIVILEGES ON</span> <span class="op">*.*</span>
+  <span class="kw">TO</span> <span class="str">'superadmin'</span>@<span class="str">'localhost'</span>
+  <span class="kw">WITH GRANT OPTION</span>; <span class="cmt">-- peut lui-même accorder des droits</span>
+
+<span class="cmt">-- Appliquer les changements</span>
+<span class="kw">FLUSH PRIVILEGES</span>;</code></pre>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Privilège</th><th>Description</th></tr>
+        <tr><td><code class="inline">SELECT</code></td><td>Lire les données</td></tr>
+        <tr><td><code class="inline">INSERT</code></td><td>Insérer des données</td></tr>
+        <tr><td><code class="inline">UPDATE</code></td><td>Modifier des données</td></tr>
+        <tr><td><code class="inline">DELETE</code></td><td>Supprimer des données</td></tr>
+        <tr><td><code class="inline">CREATE</code></td><td>Créer des tables/bases</td></tr>
+        <tr><td><code class="inline">DROP</code></td><td>Supprimer des tables/bases</td></tr>
+        <tr><td><code class="inline">ALTER</code></td><td>Modifier la structure</td></tr>
+        <tr><td><code class="inline">INDEX</code></td><td>Gérer les index</td></tr>
+        <tr><td><code class="inline">TRIGGER</code></td><td>Gérer les triggers</td></tr>
+        <tr><td><code class="inline">CREATE VIEW</code></td><td>Créer des vues</td></tr>
+        <tr><td><code class="inline">EXECUTE</code></td><td>Exécuter des procédures stockées</td></tr>
+        <tr><td><code class="inline">ALL PRIVILEGES</code></td><td>Tous les droits</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>REVOKE — Retirer des droits</h4>
+    <pre><code><span class="cmt">-- Retirer des droits spécifiques</span>
+<span class="kw">REVOKE INSERT</span>, <span class="kw">UPDATE</span>
+  <span class="kw">ON</span> <span class="tbl">ma_base</span>.<span class="tbl">clients</span>
+  <span class="kw">FROM</span> <span class="str">'alice'</span>@<span class="str">'localhost'</span>;
+
+<span class="cmt">-- Retirer tous les droits sur une base</span>
+<span class="kw">REVOKE ALL PRIVILEGES ON</span> <span class="tbl">ma_base</span>.<span class="op">*</span>
+  <span class="kw">FROM</span> <span class="str">'bob'</span>@<span class="str">'%'</span>;
+
+<span class="cmt">-- Voir les droits d'un utilisateur</span>
+<span class="kw">SHOW GRANTS FOR</span> <span class="str">'alice'</span>@<span class="str">'localhost'</span>;</code></pre>
+
+    <div class="alert alert-warning">
+      <span class="alert-icon">⚠️</span>
+      <div><strong>Principe du moindre privilège</strong> : accorder uniquement les droits <em>nécessaires</em> et rien de plus. Un compte d'application web n'a généralement besoin que de <code class="inline">SELECT, INSERT, UPDATE, DELETE</code>, jamais de <code class="inline">DROP</code> ou <code class="inline">ALL PRIVILEGES</code>.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VUES ===== -->
+<div class="section" id="vues">
+  <div class="section-title">
+    <span class="num sql-num">SQL 06</span>
+    LCD — Vues (Views)
+  </div>
+
+  <p>Une <strong>vue</strong> est une <strong>requête SELECT sauvegardée</strong> sous forme d'objet de base de données. Elle se comporte comme une table virtuelle. Les données ne sont pas dupliquées, la vue exécute la requête à chaque fois qu'on l'interroge.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <h5>✅ Avantages</h5>
+      <p>Simplifie les requêtes complexes, cache la complexité, sécurise l'accès (montrer seulement certaines colonnes), réutilisabilité.</p>
+    </div>
+    <div class="card">
+      <h5>⚠️ Limites</h5>
+      <p>Pas d'index propre, pas de paramètre, parfois non modifiables, peut être moins performante qu'une table physique.</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>CREATE VIEW — Créer une vue</h4>
+    <pre><code><span class="cmt">-- Vue simple : clients actifs avec leurs commandes</span>
+<span class="kw">CREATE VIEW</span> <span class="tbl">v_clients_actifs</span> <span class="kw">AS</span>
+  <span class="kw">SELECT</span>
+    c.<span class="tbl">id_client</span>,
+    c.<span class="tbl">nom</span>,
+    c.<span class="tbl">prenom</span>,
+    c.<span class="tbl">email</span>,
+    c.<span class="tbl">ville</span>,
+    <span class="fn">COUNT</span>(cmd.<span class="tbl">id_commande</span>) <span class="kw">AS</span> nb_commandes,
+    <span class="fn">SUM</span>(cmd.<span class="tbl">montant</span>)       <span class="kw">AS</span> total_achats
+  <span class="kw">FROM</span> <span class="tbl">clients</span> c
+  <span class="kw">LEFT JOIN</span> <span class="tbl">commandes</span> cmd <span class="kw">ON</span> c.<span class="tbl">id_client</span> <span class="op">=</span> cmd.<span class="tbl">id_client</span>
+  <span class="kw">WHERE</span> c.<span class="tbl">actif</span> <span class="op">=</span> <span class="num-lit">TRUE</span>
+  <span class="kw">GROUP BY</span> c.<span class="tbl">id_client</span>;
+
+<span class="cmt">-- Utiliser la vue exactement comme une table</span>
+<span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">v_clients_actifs</span>
+<span class="kw">WHERE</span> <span class="tbl">ville</span> <span class="op">=</span> <span class="str">'Paris'</span>
+<span class="kw">ORDER BY</span> total_achats <span class="kw">DESC</span>;</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h4>Vue pour la sécurité — Masquer des colonnes sensibles</h4>
+    <pre><code><span class="cmt">-- Vue sans colonnes sensibles (mot de passe, données bancaires…)</span>
+<span class="kw">CREATE VIEW</span> <span class="tbl">v_clients_publics</span> <span class="kw">AS</span>
+  <span class="kw">SELECT</span> <span class="tbl">id_client</span>, <span class="tbl">nom</span>, <span class="tbl">prenom</span>, <span class="tbl">ville</span>
+  <span class="kw">FROM</span> <span class="tbl">clients</span>;
+
+<span class="cmt">-- Donner accès à la vue seulement (pas à la table directe)</span>
+<span class="kw">GRANT SELECT ON</span> <span class="tbl">ma_base</span>.<span class="tbl">v_clients_publics</span> <span class="kw">TO</span> <span class="str">'stagiaire'</span>@<span class="str">'localhost'</span>;</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h4>Modifier et supprimer une vue</h4>
+    <pre><code><span class="cmt">-- Modifier une vue existante</span>
+<span class="kw">CREATE OR REPLACE VIEW</span> <span class="tbl">v_clients_actifs</span> <span class="kw">AS</span>
+  <span class="kw">SELECT</span> <span class="tbl">id_client</span>, <span class="tbl">nom</span>, <span class="tbl">prenom</span>, <span class="tbl">email</span>
+  <span class="kw">FROM</span> <span class="tbl">clients</span>
+  <span class="kw">WHERE</span> <span class="tbl">actif</span> <span class="op">=</span> <span class="num-lit">TRUE</span>;
+
+<span class="cmt">-- Supprimer une vue</span>
+<span class="kw">DROP VIEW IF EXISTS</span> <span class="tbl">v_clients_actifs</span>;
+
+<span class="cmt">-- Voir toutes les vues</span>
+<span class="kw">SHOW FULL TABLES WHERE</span> Table_type <span class="op">=</span> <span class="str">'VIEW'</span>;</code></pre>
+  </div>
+
+  <div class="subsection">
+    <h4>Vues modifiables et WITH CHECK OPTION</h4>
+    <pre><code><span class="cmt">-- Vue modifiable (simple, sans agrégation ni jointure)</span>
+<span class="kw">CREATE VIEW</span> <span class="tbl">v_clients_lyon</span> <span class="kw">AS</span>
+  <span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="tbl">clients</span>
+  <span class="kw">WHERE</span> <span class="tbl">ville</span> <span class="op">=</span> <span class="str">'Lyon'</span>
+<span class="kw">WITH CHECK OPTION</span>; <span class="cmt">-- empêche d'insérer un client d'une autre ville via cette vue</span>
+
+<span class="cmt">-- On peut insérer/modifier via la vue</span>
+<span class="kw">INSERT INTO</span> <span class="tbl">v_clients_lyon</span> (<span class="tbl">nom</span>, <span class="tbl">prenom</span>, <span class="tbl">email</span>, <span class="tbl">ville</span>)
+<span class="kw">VALUES</span> (<span class="str">'Test'</span>, <span class="str">'User'</span>, <span class="str">'test@mail.fr'</span>, <span class="str">'Lyon'</span>); <span class="cmt">-- ✅ OK</span>
+
+<span class="kw">INSERT INTO</span> <span class="tbl">v_clients_lyon</span> (<span class="tbl">nom</span>, <span class="tbl">prenom</span>, <span class="tbl">email</span>, <span class="tbl">ville</span>)
+<span class="kw">VALUES</span> (<span class="str">'Test'</span>, <span class="str">'User'</span>, <span class="str">'test@mail.fr'</span>, <span class="str">'Paris'</span>); <span class="cmt">-- ❌ ERREUR (WITH CHECK OPTION)</span></code></pre>
+  </div>
+</div>
+
+<!-- ===================================================== -->
+<!--               PARTIE CYBERSÉCURITÉ                    -->
+<!-- ===================================================== -->
+
+<div class="part-header cyber-part" id="cybersec">
+  <span class="part-icon">🔐</span>
+  <h2>Partie 2 — Cybersécurité</h2>
+  <p>RGPD, attaques, chiffrement, disponibilité, protection des équipements et sécurisation applicative — tout ce qu'il faut savoir pour le BTS SIO.</p>
+</div>
+
+<!-- ===== RGPD ===== -->
+<div class="section" id="rgpd">
+  <div class="section-title">
+    <span class="num cyber-num">CYBER 01</span>
+    RGPD & Identité numérique de l'organisation
+  </div>
+
+  <p>Le <strong>RGPD</strong> (Règlement Général sur la Protection des Données) est un règlement européen entré en vigueur le <strong>25 mai 2018</strong>. Il encadre la collecte, le traitement et le stockage des données personnelles.</p>
+
+  <div class="subsection">
+    <h4>Les 6 principes fondamentaux du RGPD</h4>
+    <div class="card-grid">
+      <div class="card">
+        <h5>1️⃣ Licéité, loyauté, transparence</h5>
+        <p>Les données doivent être traitées de façon légale, loyale et transparente pour la personne concernée.</p>
+      </div>
+      <div class="card">
+        <h5>2️⃣ Limitation des finalités</h5>
+        <p>Les données doivent être collectées pour des finalités déterminées, explicites et légitimes. Pas de réutilisation à d'autres fins.</p>
+      </div>
+      <div class="card">
+        <h5>3️⃣ Minimisation des données</h5>
+        <p>Collecter uniquement les données <em>strictement nécessaires</em> à la finalité. Pas de collecte excessive.</p>
+      </div>
+      <div class="card">
+        <h5>4️⃣ Exactitude</h5>
+        <p>Les données doivent être exactes et mises à jour. Les données inexactes doivent être effacées ou rectifiées.</p>
+      </div>
+      <div class="card">
+        <h5>5️⃣ Limitation de la conservation</h5>
+        <p>Les données ne peuvent être conservées plus longtemps que nécessaire à la finalité du traitement.</p>
+      </div>
+      <div class="card">
+        <h5>6️⃣ Intégrité et confidentialité</h5>
+        <p>Sécurité appropriée : protection contre le traitement non autorisé, la perte ou la destruction accidentelle.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Les bases légales du traitement</h4>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Base légale</th><th>Description</th><th>Exemple</th></tr>
+        <tr><td>Consentement</td><td>La personne a donné son accord explicite</td><td>Newsletter, cookies non essentiels</td></tr>
+        <tr><td>Contrat</td><td>Nécessaire à l'exécution d'un contrat</td><td>Traiter l'adresse pour une livraison</td></tr>
+        <tr><td>Obligation légale</td><td>Imposé par la loi</td><td>Conservation des factures 10 ans</td></tr>
+        <tr><td>Intérêt vital</td><td>Protéger la vie d'une personne</td><td>Urgence médicale</td></tr>
+        <tr><td>Mission d'intérêt public</td><td>Tâche de service public</td><td>Données fiscales</td></tr>
+        <tr><td>Intérêt légitime</td><td>Intérêt de l'organisme sans empiéter sur les droits</td><td>Prévention de la fraude</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Les droits des personnes concernées</h4>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Droit</th><th>Description</th></tr>
+        <tr><td>🔍 Accès (Art. 15)</td><td>Savoir quelles données sont détenues et obtenir une copie</td></tr>
+        <tr><td>✏️ Rectification (Art. 16)</td><td>Faire corriger les données inexactes</td></tr>
+        <tr><td>🗑️ Effacement (Art. 17)</td><td>Droit à l'oubli — faire supprimer ses données</td></tr>
+        <tr><td>⏸️ Limitation (Art. 18)</td><td>Geler l'utilisation des données</td></tr>
+        <tr><td>📦 Portabilité (Art. 20)</td><td>Recevoir ses données dans un format structuré et les transférer</td></tr>
+        <tr><td>🚫 Opposition (Art. 21)</td><td>S'opposer au traitement (notamment le marketing direct)</td></tr>
+        <tr><td>🤖 Profilage (Art. 22)</td><td>Ne pas faire l'objet d'une décision automatisée</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Le DPO — Délégué à la Protection des Données</h4>
+    <p>Le <strong>DPO</strong> (Data Protection Officer) est le garant de la conformité RGPD. Il est <strong>obligatoire</strong> pour :</p>
+    <ul>
+      <li>Les autorités et organismes publics</li>
+      <li>Les organismes dont l'activité principale implique un <strong>suivi régulier et systématique des personnes</strong> à grande échelle</li>
+      <li>Les organismes traitant des <strong>données sensibles</strong> (santé, origine ethnique, religion…) à grande échelle</li>
+    </ul>
+    <div class="alert alert-info">
+      <span class="alert-icon">💡</span>
+      <div>Le DPO doit être <strong>indépendant</strong> et ne peut pas être sanctionné pour l'exercice de ses fonctions. Il est l'interlocuteur de la CNIL.</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Notification des violations de données</h4>
+    <p>En cas de violation de données (fuite, cyberattaque…) :</p>
+    <ul>
+      <li>Notifier la <strong>CNIL dans les 72h</strong> suivant la découverte</li>
+      <li>Informer les <strong>personnes concernées</strong> si la violation présente un risque élevé pour leurs droits</li>
+    </ul>
+  </div>
+
+  <div class="subsection">
+    <h4>Sanctions RGPD</h4>
+    <div class="card-grid">
+      <div class="card">
+        <h5>Niveau 1 — Infractions mineures</h5>
+        <p>Jusqu'à <span class="highlight-orange">10 millions d'euros</span> ou <span class="highlight-orange">2% du CA</span> mondial annuel (le plus élevé des deux).</p>
+      </div>
+      <div class="card">
+        <h5>Niveau 2 — Infractions graves</h5>
+        <p>Jusqu'à <span class="highlight-red">20 millions d'euros</span> ou <span class="highlight-red">4% du CA</span> mondial annuel (le plus élevé des deux).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Identité numérique de l'organisation</h4>
+    <p>L'identité numérique d'une organisation repose sur plusieurs éléments :</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Composante</th><th>Description</th></tr>
+        <tr><td>Nom de domaine</td><td>Identifiant principal sur Internet (ex: entreprise.fr)</td></tr>
+        <tr><td>Certificat SSL/TLS</td><td>Preuve de l'identité du site web (cadenas HTTPS)</td></tr>
+        <tr><td>Signature numérique</td><td>Authentifie l'origine des documents et emails</td></tr>
+        <tr><td>Charte graphique / e-réputation</td><td>Image de marque numérique</td></tr>
+        <tr><td>Comptes réseaux sociaux</td><td>Présence et communication officielle</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONFIDENTIALITE ===== -->
+<div class="section" id="confidentialite">
+  <div class="section-title">
+    <span class="num cyber-num">CYBER 02</span>
+    Confidentialité — Attaques et Remédiation
+  </div>
+
+  <p>La <strong>confidentialité</strong> garantit que seules les personnes autorisées peuvent accéder aux données. C'est le <strong>C</strong> de la triade CIA (Confidentialité, Intégrité, Disponibilité).</p>
+
+  <div class="subsection">
+    <h4>Principales attaques contre la confidentialité</h4>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Attaque</th><th>Description</th><th>Remédiation</th></tr>
+        <tr><td><strong>Phishing</strong></td><td>Email frauduleux imitant un organisme de confiance pour voler des identifiants</td><td>Formation, filtres anti-spam, MFA, SPF/DKIM</td></tr>
+        <tr><td><strong>Spear Phishing</strong></td><td>Phishing ciblé sur une personne spécifique</td><td>Formation avancée, vérification des expéditeurs</td></tr>
+        <tr><td><strong>MITM</strong> (Man In The Middle)</td><td>L'attaquant intercepte les communications entre deux parties</td><td>HTTPS/TLS, VPN, certificats</td></tr>
+        <tr><td><strong>Sniffing</strong></td><td>Écoute passive du trafic réseau</td><td>Chiffrement (TLS), VPN, réseaux switchés</td></tr>
+        <tr><td><strong>Injection SQL</strong></td><td>Injection de code SQL dans les formulaires pour accéder à la BDD</td><td>Requêtes préparées (PDO), validation des entrées, WAF</td></tr>
+        <tr><td><strong>Brute Force</strong></td><td>Tester toutes les combinaisons de mots de passe</td><td>Lockout, CAPTCHA, MFA, politique de MDP fort</td></tr>
+        <tr><td><strong>Credential Stuffing</strong></td><td>Tester des identifiants volés d'autres sites</td><td>MFA, détection d'anomalies, passwords uniques</td></tr>
+        <tr><td><strong>Keylogger</strong></td><td>Enregistrement des frappes clavier</td><td>Antivirus EDR, MFA, clavier virtuel</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Le chiffrement — Principe fondamental</h4>
+
+    <p style="font-weight:700; color: var(--cyber); margin-bottom:8px;">🔑 Chiffrement symétrique</p>
+    <p>La <strong>même clé</strong> est utilisée pour chiffrer et déchiffrer. Rapide mais nécessite d'échanger la clé de façon sécurisée.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Algorithme</th><th>Taille de clé</th><th>Usage</th></tr>
+        <tr><td>AES-128</td><td>128 bits</td><td>Standard actuel, suffisant</td></tr>
+        <tr><td>AES-256</td><td>256 bits</td><td>Très sécurisé, recommandé</td></tr>
+        <tr><td>DES</td><td>56 bits</td><td>❌ Obsolète (cassé en 1999)</td></tr>
+        <tr><td>3DES</td><td>168 bits</td><td>⚠️ Déprécié</td></tr>
+      </table>
+    </div>
+
+    <p style="font-weight:700; color: var(--cyber); margin: 16px 0 8px;">🔐 Chiffrement asymétrique (clé publique / clé privée)</p>
+    <p>Deux clés mathématiquement liées : <strong>clé publique</strong> (partageable) pour chiffrer, <strong>clé privée</strong> (secrète) pour déchiffrer. Plus lent mais résout le problème d'échange de clé.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Algorithme</th><th>Usage</th></tr>
+        <tr><td>RSA (2048 ou 4096 bits)</td><td>Chiffrement, signature, échange de clés SSL/TLS</td></tr>
+        <tr><td>ECDSA / EdDSA</td><td>Signatures numériques (plus compact que RSA)</td></tr>
+        <tr><td>Diffie-Hellman</td><td>Échange de clés sécurisé</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>HTTPS / TLS — Sécuriser les communications web</h4>
+    <p>TLS (<em>Transport Layer Security</em>) chiffre les communications entre le navigateur et le serveur. Fonctionnement simplifié :</p>
+    <ol>
+      <li>Le client demande une connexion sécurisée</li>
+      <li>Le serveur envoie son <strong>certificat SSL/TLS</strong> (contient sa clé publique)</li>
+      <li>Le client vérifie le certificat auprès d'une <strong>autorité de certification (CA)</strong></li>
+      <li>Les deux parties échangent une <strong>clé de session symétrique</strong> (via Diffie-Hellman)</li>
+      <li>La communication est chiffrée avec AES</li>
+    </ol>
+    <div class="alert alert-success">
+      <span class="alert-icon">✅</span>
+      <div><strong>TLS 1.3</strong> est la version actuelle recommandée. Les versions TLS 1.0, 1.1 et SSL 2.0/3.0 sont <strong>obsolètes et vulnérables</strong> (POODLE, BEAST, etc.).</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>VPN — Réseau Privé Virtuel</h4>
+    <p>Un <strong>VPN</strong> crée un tunnel chiffré entre le client et le serveur, masquant le trafic des écoutes intermédiaires.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Protocole VPN</th><th>Sécurité</th><th>Usage</th></tr>
+        <tr><td>OpenVPN</td><td>⭐⭐⭐⭐⭐</td><td>Standard entreprise, open source</td></tr>
+        <tr><td>WireGuard</td><td>⭐⭐⭐⭐⭐</td><td>Moderne, très rapide, code minimal</td></tr>
+        <tr><td>IPSec/IKEv2</td><td>⭐⭐⭐⭐</td><td>VPN mobile, natif sur iOS/Android</td></tr>
+        <tr><td>PPTP</td><td>⭐</td><td>❌ Obsolète, cassé</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Authentification Multifacteur (MFA/2FA)</h4>
+    <p>Le MFA combine <strong>au moins 2 facteurs d'authentification</strong> parmi :</p>
+    <ul>
+      <li>🧠 <strong>Ce que tu sais</strong> : mot de passe, PIN, question secrète</li>
+      <li>📱 <strong>Ce que tu possèdes</strong> : smartphone (OTP), clé physique (YubiKey), carte à puce</li>
+      <li>👁️ <strong>Ce que tu es</strong> : empreinte digitale, reconnaissance faciale, iris</li>
+    </ul>
+    <div class="alert alert-success">
+      <span class="alert-icon">✅</span>
+      <div>Le MFA réduit de <strong>99,9%</strong> le risque de compromission d'un compte, même si le mot de passe est volé (source Microsoft).</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== INTEGRITE ===== -->
+<div class="section" id="integrite">
+  <div class="section-title">
+    <span class="num cyber-num">CYBER 03</span>
+    Intégrité des données
+  </div>
+
+  <p>L'<strong>intégrité</strong> garantit que les données n'ont pas été modifiées de façon non autorisée. C'est le <strong>I</strong> de la triade CIA.</p>
+
+  <div class="subsection">
+    <h4>Les fonctions de hachage (Hash)</h4>
+    <p>Une fonction de hachage transforme des données en une <strong>empreinte numérique de taille fixe</strong>. Elle est à sens unique (irréversible) et déterministe.</p>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>Algorithme</th><th>Taille du hash</th><th>Sécurité</th></tr>
+        <tr><td>MD5</td><td>128 bits (32 hex)</td><td>❌ Cassé, collisions connues — à éviter</td></tr>
+        <tr><td>SHA-1</td><td>160 bits (40 hex)</td><td>❌ Obsolète — déprécié depuis 2017</td></tr>
+        <tr><td>SHA-256</td><td>256 bits (64 hex)</td><td>✅ Standard actuel</td></tr>
+        <tr><td>SHA-512</td><td>512 bits (128 hex)</td><td>✅ Très sécurisé</td></tr>
+        <tr><td>SHA-3</td><td>Variable</td><td>✅ Algorithme de remplacement (nouvelle famille)</td></tr>
+        <tr><td>bcrypt / Argon2</td><td>Variable</td><td>✅ Recommandé pour les <strong>mots de passe</strong></td></tr>
+      </table>
+    </div>
+
+    <div class="alert alert-info">
+      <span class="alert-icon">💡</span>
+      <div><strong>Propriétés d'une bonne fonction de hachage :</strong>
+        <br>• <strong>Déterministe</strong> : même entrée → même hash
+        <br>• <strong>Rapide à calculer</strong>
+        <br>• <strong>Résistance aux préimages</strong> : impossible de retrouver les données depuis le hash
+        <br>• <strong>Résistance aux collisions</strong> : deux entrées différentes ne doivent pas donner le même hash
+        <br>• <strong>Effet avalanche</strong> : un seul bit changé modifie tout le hash
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Salage des mots de passe (Salt)</h4>
+    <p>Le <strong>sel</strong> est une valeur aléatoire ajoutée au mot de passe avant le hachage, pour contrer les attaques par <em>rainbow table</em>.</p>
+    <pre><code><span class="cmt">-- Sans sel : même MDP → même hash (vulnérable aux rainbow tables)</span>
+SHA256("password123") → e2b05... <span class="cmt">← toujours identique</span>
+
+<span class="cmt">-- Avec sel aléatoire : hashes différents même pour le même MDP</span>
+SHA256("password123" + "aZ9kT!") → f8c2a...
+SHA256("password123" + "rP3mX#") → 9d1b7...  <span class="cmt">← différent !</span></code></pre>
+  </div>
+
+  <div class="subsection">
+    <h4>Signature numérique</h4>
+    <p>La signature numérique garantit :</p>
+    <ul>
+      <li><strong>Authentification</strong> : l'expéditeur est bien celui qu'il prétend être</li>
+      <li><strong>Intégrité</strong> : le document n'a pas été modifié en transit</li>
+      <li><strong>Non-répudiation</strong> : l'expéditeur ne peut pas nier avoir signé</li>
+    </ul>
+    <div class="alert alert-info">
+      <span class="alert-icon">💡</span>
+      <div><strong>Fonctionnement :</strong>
+        <br>1. Alice calcule le <strong>hash</strong> du document
+        <br>2. Elle chiffre ce hash avec sa <strong>clé privée</strong> → c'est la signature
+        <br>3. Bob déchiffre la signature avec la <strong>clé publique</strong> d'Alice
+        <br>4. Il recalcule le hash du document reçu
+        <br>5. Si les deux hash correspondent → intégrité et authenticité confirmées
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>HMAC — Authentification de message</h4>
+    <p>Le <strong>HMAC</strong> (Hash-based Message Authentication Code) est un hash calculé avec une clé secrète partagée. Il garantit à la fois l'intégrité et l'authenticité sans utiliser de clé privée/publique.</p>
+    <pre><code>HMAC-SHA256(clé_secrète, message) → code_d_authentification</code></pre>
+    <p>Utilisé dans les <strong>JWT</strong> (JSON Web Tokens), les API authentifiées, etc.</p>
+  </div>
+
+  <div class="subsection">
+    <h4>PKI — Infrastructure à Clés Publiques</h4>
+    <p>La <strong>PKI</strong> (Public Key Infrastructure) est l'ensemble des mécanismes permettant de gérer les certificats numériques.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Composant</th><th>Rôle</th></tr>
+        <tr><td>Autorité de Certification (CA)</td><td>Émet et signe les certificats (ex: Let's Encrypt, DigiCert)</td></tr>
+        <tr><td>Autorité d'Enregistrement (RA)</td><td>Vérifie l'identité avant d'émettre un certificat</td></tr>
+        <tr><td>Certificat X.509</td><td>Document numérique liant une clé publique à une identité</td></tr>
+        <tr><td>CRL / OCSP</td><td>Listes de certificats révoqués (compromis)</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DISPONIBILITE ===== -->
+<div class="section" id="disponibilite">
+  <div class="section-title">
+    <span class="num cyber-num">CYBER 04</span>
+    Disponibilité des services informatiques
+  </div>
+
+  <p>La <strong>disponibilité</strong> garantit que les systèmes et données sont accessibles quand les utilisateurs en ont besoin. C'est le <strong>D</strong> de la triade CIA.</p>
+
+  <div class="subsection">
+    <h4>Attaques contre la disponibilité</h4>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Attaque</th><th>Description</th><th>Remédiation</th></tr>
+        <tr><td><strong>DoS</strong> (Denial of Service)</td><td>Une seule source sature un service avec des requêtes</td><td>Firewall, rate limiting, blocage IP</td></tr>
+        <tr><td><strong>DDoS</strong> (Distributed DoS)</td><td>Milliers de machines (botnet) attaquent simultanément</td><td>CDN, Anti-DDoS (Cloudflare), scrubbing center</td></tr>
+        <tr><td><strong>Ransomware</strong></td><td>Chiffrement des données, rançon demandée pour la clé</td><td>Sauvegardes offline, EDR, segmentation réseau</td></tr>
+        <tr><td><strong>Attaque par épuisement de ressources</strong></td><td>Saturation CPU, RAM, connexions</td><td>Load balancer, monitoring, autoscaling</td></tr>
+        <tr><td><strong>Panne physique</strong></td><td>Incendie, inondation, coupure d'alimentation</td><td>PRA, redondance, salle blanche, onduleur (UPS)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>La règle 3-2-1 pour les sauvegardes</h4>
+    <div class="card-grid">
+      <div class="card">
+        <h5>3️⃣ — 3 copies</h5>
+        <p>Conserver au moins <strong>3 copies</strong> des données (1 originale + 2 sauvegardes).</p>
+      </div>
+      <div class="card">
+        <h5>2️⃣ — 2 supports</h5>
+        <p>Sur <strong>2 types de supports différents</strong> (ex: disque local + bande magnétique).</p>
+      </div>
+      <div class="card">
+        <h5>1️⃣ — 1 hors site</h5>
+        <p>Au moins <strong>1 copie hors site</strong> (cloud, datacenter distant, coffre-fort).</p>
+      </div>
+    </div>
+    <div class="alert alert-warning">
+      <span class="alert-icon">⚠️</span>
+      <div>Une sauvegarde non testée n'est pas une sauvegarde ! <strong>Tester régulièrement la restauration</strong> est indispensable. Un ransomware peut aussi chiffrer les sauvegardes réseau — garder une copie <strong>offline et air-gapped</strong>.</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>PCA & PRA — Continuité et Reprise d'Activité</h4>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Sigle</th><th>Nom complet</th><th>Objectif</th></tr>
+        <tr><td><strong>PCA</strong></td><td>Plan de Continuité d'Activité</td><td>Maintenir l'activité PENDANT l'incident (dégradé si nécessaire)</td></tr>
+        <tr><td><strong>PRA</strong></td><td>Plan de Reprise d'Activité</td><td>Restaurer l'activité APRÈS l'incident</td></tr>
+        <tr><td><strong>RTO</strong></td><td>Recovery Time Objective</td><td>Durée maximale d'interruption acceptable</td></tr>
+        <tr><td><strong>RPO</strong></td><td>Recovery Point Objective</td><td>Perte de données maximale acceptable (en temps)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Haute disponibilité — Solutions techniques</h4>
+    <div class="card-grid">
+      <div class="card">
+        <h5>⚖️ Load Balancer</h5>
+        <p>Répartit le trafic entre plusieurs serveurs pour éviter la surcharge et assurer la continuité en cas de panne d'un serveur.</p>
+      </div>
+      <div class="card">
+        <h5>🔄 Clustering</h5>
+        <p>Groupe de serveurs fonctionnant ensemble. En cas de panne, un autre nœud prend le relais automatiquement (failover).</p>
+      </div>
+      <div class="card">
+        <h5>🪞 Réplication</h5>
+        <p>Copie en temps réel des données sur un serveur secondaire (réplication master-slave en BDD).</p>
+      </div>
+      <div class="card">
+        <h5>☁️ Cloud / Scalabilité</h5>
+        <p>Augmentation automatique des ressources en cas de pic de charge (autoscaling AWS, Azure, GCP).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Monitoring & Supervision</h4>
+    <p>Pour garantir la disponibilité, il faut superviser en permanence :</p>
+    <ul>
+      <li><strong>Infrastructure</strong> : CPU, RAM, disque, réseau (Nagios, Zabbix, Prometheus)</li>
+      <li><strong>Applications</strong> : temps de réponse, erreurs, disponibilité (Grafana, Datadog)</li>
+      <li><strong>Logs</strong> : centralisation et analyse (ELK Stack, SIEM)</li>
+      <li><strong>Alertes</strong> : notification immédiate en cas d'anomalie (email, SMS, Slack)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== EQUIPEMENTS ===== -->
+<div class="section" id="equipements">
+  <div class="section-title">
+    <span class="num cyber-num">CYBER 05</span>
+    Sécuriser les équipements et les usages
+  </div>
+
+  <div class="subsection">
+    <h4>Firewall (Pare-feu)</h4>
+    <p>Un firewall contrôle le trafic réseau entrant et sortant selon des règles prédéfinies.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Type</th><th>Niveau OSI</th><th>Analyse</th></tr>
+        <tr><td>Firewall de paquets (Packet Filter)</td><td>Couche 3-4</td><td>IP source/destination, ports, protocole</td></tr>
+        <tr><td>Firewall stateful</td><td>Couche 3-4</td><td>État des connexions (SYN, ACK…)</td></tr>
+        <tr><td>Proxy firewall (applicatif)</td><td>Couche 7</td><td>Contenu des applications (HTTP, FTP…)</td></tr>
+        <tr><td>NGFW (Next Gen Firewall)</td><td>Couche 3-7</td><td>DPI, IPS intégré, inspection SSL</td></tr>
+        <tr><td>WAF (Web Application Firewall)</td><td>Couche 7</td><td>Protège les applications web (XSS, SQLi…)</td></tr>
+      </table>
+    </div>
+    <div class="alert alert-info">
+      <span class="alert-icon">💡</span>
+      <div><strong>DMZ</strong> (Zone Démilitarisée) : zone réseau entre Internet et le LAN interne, contenant les serveurs accessibles au public (web, mail, DNS). Protège le réseau interne en cas de compromission.</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>IDS & IPS — Détection et Prévention d'Intrusion</h4>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Système</th><th>Rôle</th><th>Action</th></tr>
+        <tr><td><strong>IDS</strong> (Intrusion Detection System)</td><td>Détecte les intrusions</td><td>Alerte uniquement (passif)</td></tr>
+        <tr><td><strong>IPS</strong> (Intrusion Prevention System)</td><td>Détecte ET bloque</td><td>Bloque le trafic suspect (actif)</td></tr>
+        <tr><td><strong>SIEM</strong> (Security Information and Event Management)</td><td>Centralise et corrèle les logs</td><td>Détection d'anomalies, forensique</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Antivirus & EDR</h4>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Solution</th><th>Description</th></tr>
+        <tr><td><strong>Antivirus traditionnel</strong></td><td>Détection par signatures (base de virus connus). Limité contre les malwares inconnus (zero-day).</td></tr>
+        <tr><td><strong>EDR</strong> (Endpoint Detection and Response)</td><td>Surveillance comportementale des endpoints, détection d'anomalies, réponse automatisée. Très efficace contre les attaques avancées.</td></tr>
+        <tr><td><strong>XDR</strong> (Extended Detection and Response)</td><td>Vision unifiée sur endpoints, réseau, cloud. Corrélation avancée des menaces.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Gestion des correctifs (Patch Management)</h4>
+    <p>Les vulnérabilités des logiciels sont la principale porte d'entrée des attaquants. La gestion des correctifs consiste à :</p>
+    <ol>
+      <li><strong>Inventorier</strong> tous les logiciels et leurs versions</li>
+      <li><strong>Surveiller</strong> les CVE (Common Vulnerabilities and Exposures)</li>
+      <li><strong>Tester</strong> les correctifs en environnement de pré-production</li>
+      <li><strong>Déployer</strong> rapidement les correctifs critiques</li>
+      <li><strong>Vérifier</strong> l'application des mises à jour</li>
+    </ol>
+    <div class="alert alert-danger">
+      <span class="alert-icon">🚨</span>
+      <div>EternalBlue (WannaCry, 2017) et Log4Shell (2021) ont exploité des failles sur des systèmes non mis à jour. La mise à jour est la mesure de sécurité la plus importante et la plus négligée.</div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Politique de mots de passe</h4>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Critère</th><th>Recommandation (ANSSI)</th></tr>
+        <tr><td>Longueur minimale</td><td>12 caractères minimum (16+ recommandé)</td></tr>
+        <tr><td>Complexité</td><td>Majuscules, minuscules, chiffres, caractères spéciaux</td></tr>
+        <tr><td>Stockage</td><td>Jamais en clair — hachage avec sel (bcrypt, Argon2)</td></tr>
+        <tr><td>Renouvellement</td><td>En cas de soupçon de compromission (pas automatique tous les 3 mois)</td></tr>
+        <tr><td>Gestionnaire de mots de passe</td><td>Recommandé (KeePass, Bitwarden)</td></tr>
+        <tr><td>MFA</td><td>Obligatoire pour les comptes sensibles</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Charte informatique & Sensibilisation</h4>
+    <p>La <strong>charte informatique</strong> est un document contractuel définissant les règles d'utilisation des ressources informatiques. Elle doit être :</p>
+    <ul>
+      <li>Signée par chaque collaborateur</li>
+      <li>Jointe au règlement intérieur ou au contrat de travail</li>
+      <li>Régulièrement mise à jour</li>
+    </ul>
+    <p>Elle couvre : usage d'Internet, des emails, des mots de passe, des appareils personnels (BYOD), etc.</p>
+  </div>
+
+  <div class="subsection">
+    <h4>BYOD — Bring Your Own Device</h4>
+    <p>Le BYOD désigne l'utilisation d'appareils personnels (smartphone, tablette, PC) dans un cadre professionnel. Risques et solutions :</p>
+    <div class="card-grid">
+      <div class="card">
+        <h5>⚠️ Risques</h5>
+        <p>Malware sur appareils personnels, vol de données, applications non sécurisées, manque de chiffrement.</p>
+      </div>
+      <div class="card">
+        <h5>✅ Solutions</h5>
+        <p>MDM (Mobile Device Management), réseau WiFi dédié (VLAN invité), chiffrement obligatoire, VPN, politique d'utilisation claire.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APPLICATIF ===== -->
+<div class="section" id="applicatif">
+  <div class="section-title">
+    <span class="num cyber-num">CYBER 06</span>
+    Cybersécurisation d'une solution applicative
+  </div>
+
+  <div class="subsection">
+    <h4>OWASP Top 10 — Les 10 vulnérabilités web les plus critiques</h4>
+    <div class="table-wrap">
+      <table>
+        <tr><th>#</th><th>Vulnérabilité</th><th>Description rapide</th><th>Remédiation</th></tr>
+        <tr><td>A01</td><td><strong>Broken Access Control</strong></td><td>Un utilisateur accède à des ressources auxquelles il n'est pas autorisé</td><td>Contrôle d'accès côté serveur, principe du moindre privilège</td></tr>
+        <tr><td>A02</td><td><strong>Cryptographic Failures</strong></td><td>Mauvais chiffrement, protocoles obsolètes, données sensibles en clair</td><td>TLS 1.3, AES-256, bcrypt pour les MDP</td></tr>
+        <tr><td>A03</td><td><strong>Injection (SQL, LDAP, OS…)</strong></td><td>Données non validées interprétées comme du code</td><td>Requêtes préparées, validation, ORM</td></tr>
+        <tr><td>A04</td><td><strong>Insecure Design</strong></td><td>Conception sans modélisation des menaces</td><td>Threat modeling, secure design patterns</td></tr>
+        <tr><td>A05</td><td><strong>Security Misconfiguration</strong></td><td>Configurations par défaut, ports inutiles ouverts, erreurs exposées</td><td>Durcissement, scan de configuration, CIS Benchmarks</td></tr>
+        <tr><td>A06</td><td><strong>Vulnerable Components</strong></td><td>Bibliothèques et frameworks avec des CVE connues</td><td>SCA (Software Composition Analysis), mise à jour</td></tr>
+        <tr><td>A07</td><td><strong>Auth Failures</strong></td><td>Authentification défaillante, sessions mal gérées</td><td>MFA, tokens sécurisés, expiration des sessions</td></tr>
+        <tr><td>A08</td><td><strong>Software Integrity Failures</strong></td><td>Pipeline CI/CD compromis, mises à jour non signées</td><td>Vérification des signatures, SBOM</td></tr>
+        <tr><td>A09</td><td><strong>Logging Failures</strong></td><td>Logs insuffisants, pas de détection des incidents</td><td>Centralisation des logs, SIEM, alertes</td></tr>
+        <tr><td>A10</td><td><strong>SSRF</strong></td><td>Le serveur effectue des requêtes forgées vers des ressources internes</td><td>Validation des URLs, whitelist des destinations</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Injection SQL — En détail</h4>
+    <pre><code><span class="cmt">-- VULNÉRABLE : concaténation directe de l'entrée utilisateur</span>
+<span class="cmt">// PHP vulnérable :</span>
+$query = "SELECT * FROM users WHERE login = '" . $_GET['user'] . "' AND password = '" . $_GET['pass'] . "'";
+
+<span class="cmt">-- Attaque : user = admin'-- (le -- commente le reste de la requête)</span>
+<span class="cmt">-- Requête exécutée : SELECT * FROM users WHERE login = 'admin'--' AND ...</span>
+<span class="cmt">-- Résultat : connexion sans mot de passe !</span>
+
+<span class="cmt">-- SÉCURISÉ : requête préparée (PDO)</span>
+<span class="cmt">// PHP sécurisé :</span>
+$stmt = $pdo->prepare("SELECT * FROM users WHERE login = ? AND password = ?");
+$stmt->execute([$_GET['user'], $_GET['pass']]);</code></pre>
+
+    <div class="alert alert-success">
+      <span class="alert-icon">✅</span>
+      <div><strong>Remédiations contre l'injection SQL :</strong>
+        <br>1. <strong>Requêtes préparées</strong> (PDO, PreparedStatement) — solution principale
+        <br>2. <strong>ORM</strong> (Doctrine, Eloquent, Hibernate) — abstraction sécurisée
+        <br>3. <strong>Validation des entrées</strong> — whitelist des valeurs attendues
+        <br>4. <strong>Principe du moindre privilège</strong> — compte BDD sans DROP/ALTER
+        <br>5. <strong>WAF</strong> — dernière ligne de défense
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>XSS — Cross-Site Scripting</h4>
+    <p>L'attaquant injecte du code JavaScript malveillant dans des pages vues par d'autres utilisateurs.</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Type XSS</th><th>Fonctionnement</th></tr>
+        <tr><td><strong>Reflected XSS</strong></td><td>Le script est dans la requête HTTP et reflété immédiatement dans la réponse</td></tr>
+        <tr><td><strong>Stored XSS</strong></td><td>Le script est stocké en BDD et exécuté pour tous les visiteurs</td></tr>
+        <tr><td><strong>DOM-based XSS</strong></td><td>Manipulation du DOM côté client sans passer par le serveur</td></tr>
+      </table>
+    </div>
+    <div class="alert alert-success">
+      <span class="alert-icon">✅</span>
+      <div><strong>Remédiations XSS :</strong>
+        <br>• <strong>Échappement des sorties</strong> : htmlspecialchars() en PHP, encode en Angular/React
+        <br>• <strong>CSP</strong> (Content Security Policy) : entête HTTP limitant les sources de scripts
+        <br>• <strong>HttpOnly</strong> sur les cookies : empêche JS d'accéder aux cookies de session
+        <br>• <strong>Bibliothèques de sanitisation</strong> (DOMPurify, OWASP Java HTML Sanitizer)
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>CSRF — Cross-Site Request Forgery</h4>
+    <p>Un site malveillant force le navigateur d'un utilisateur authentifié à effectuer une action sur un site légitime à son insu.</p>
+    <div class="alert alert-success">
+      <span class="alert-icon">✅</span>
+      <div><strong>Remédiations CSRF :</strong>
+        <br>• <strong>Token CSRF</strong> : jeton aléatoire dans chaque formulaire, vérifié côté serveur
+        <br>• <strong>SameSite cookie</strong> : attribut Strict ou Lax sur les cookies de session
+        <br>• <strong>Vérification de l'origine</strong> : contrôle des entêtes Origin/Referer
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>DevSecOps — Intégrer la sécurité dans le développement</h4>
+    <p>Le <strong>DevSecOps</strong> intègre la sécurité à chaque étape du cycle de développement logiciel (Shift Left Security) :</p>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Phase</th><th>Outil / Pratique</th></tr>
+        <tr><td>Planification</td><td>Threat modeling (STRIDE), DREAD</td></tr>
+        <tr><td>Développement</td><td>Revue de code sécurisée, linting sécurité (Semgrep, SonarQube)</td></tr>
+        <tr><td>Build / CI</td><td>SAST (analyse statique), vérification des dépendances (OWASP Dependency-Check)</td></tr>
+        <tr><td>Test</td><td>DAST (analyse dynamique), tests de pénétration automatisés (OWASP ZAP)</td></tr>
+        <tr><td>Déploiement</td><td>Infrastructure as Code sécurisée, secrets management (HashiCorp Vault)</td></tr>
+        <tr><td>Production</td><td>RASP, WAF, monitoring, SIEM, Incident Response</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h4>Sécurité des API</h4>
+    <ul>
+      <li><strong>Authentification</strong> : OAuth 2.0, JWT, API Keys</li>
+      <li><strong>HTTPS obligatoire</strong> sur tous les endpoints</li>
+      <li><strong>Rate limiting</strong> : limiter le nombre de requêtes par IP/token</li>
+      <li><strong>Validation des entrées</strong> : vérifier tous les paramètres d'entrée</li>
+      <li><strong>CORS</strong> : configurer les origines autorisées (pas <code class="inline">Access-Control-Allow-Origin: *</code> en production)</li>
+      <li><strong>Versioning</strong> : maintenir et sécuriser toutes les versions actives</li>
+    </ul>
+  </div>
+
+  <div class="subsection">
+    <h4>Récapitulatif — Triade CIA</h4>
+    <div class="card-grid">
+      <div class="card">
+        <h5 style="color: var(--sql)">🔒 Confidentialité</h5>
+        <p>Seules les personnes autorisées accèdent aux données.<br><br>→ Chiffrement, MFA, contrôle d'accès, VPN</p>
+      </div>
+      <div class="card">
+        <h5 style="color: var(--cyber)">✅ Intégrité</h5>
+        <p>Les données ne sont pas altérées de façon non autorisée.<br><br>→ Hash, signature numérique, HMAC, checksums</p>
+      </div>
+      <div class="card">
+        <h5 style="color: var(--green)">⚡ Disponibilité</h5>
+        <p>Les systèmes sont accessibles quand on en a besoin.<br><br>→ PCA/PRA, sauvegardes 3-2-1, load balancer, monitoring</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <p>Cours BTS SIO — SQL & Cybersécurité | Toutes les notions des quiz de révision</p>
+  <p style="margin-top:8px;">Bon courage pour ton BTS SIO ! 💪 <strong>Tu vas assurer.</strong></p>
+</div>
+
+</div><!-- /content -->
+</body>
+</html> 
